@@ -1,0 +1,18 @@
+Architecture
+- (Spectrogram) -(1)-> 2D-GCNN ->(?) BiRNN (temporal detail) ->(?)
+- Mean Average on FNN SigmoidxSoftmax output -> Cross entropy sum_batch(P log O + (1-P) log (1-O))
+
+(1) - Each spectrogram in the mini-batch is binned to have an n-by-n resolution in for the filter-bank size, 3x3 in this paper,
+ending to have Nf/3 channels output and Nt/3 timestamps, padded with same to output Nt/3 time in with frequencies bin of size 3.
+
+Mini-batch balancing
+
+-Balance batchs so the less frequent is at most 5 times lesser in quantity than the most frequent class sample.
+
+Hyperparam Tuning Strategies
+
+- Dynamical learning-rate
+- Average accuracy of diverse hyperparams (cross-validated diverse hyperparams) [mean on cross validation sets and in all hyperparams] ?
+
+
+
