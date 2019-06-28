@@ -12,7 +12,5 @@ Mini-batch balancing
 Hyperparam Tuning Strategies
 
 - Dynamical learning-rate
-- Average accuracy of diverse hyperparams (cross-validated diverse hyperparams) [mean on cross validation sets and in all hyperparams] ?
-
-
-
+- Average accuracy of diverse hyperparams (cross-validated diverse hyperparams) [mean on cross validation sets and in all hyperparams]
+  -- Implement algorithms to search in parameters space such Genetic Algorithm or others that dosnt depend on topological (i.e. convexity) requiriments.
