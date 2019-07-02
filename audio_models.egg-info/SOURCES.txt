@@ -1,0 +1,7 @@
+README.md
+setup.py
+audio_models.egg-info/PKG-INFO
+audio_models.egg-info/SOURCES.txt
+audio_models.egg-info/dependency_links.txt
+audio_models.egg-info/requires.txt
+audio_models.egg-info/top_level.txt

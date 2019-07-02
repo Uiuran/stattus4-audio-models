@@ -1,0 +1,38 @@
+Metadata-Version: 1.1
+Name: audio-models
+Version: 0.0a0
+Summary: python package directed to audio models with semantic features identification
+Home-page: https://bitbucket.org/dpenalva/stattus4-audio-models/src/master/
+Author: Daniel Penalva
+Author-email: dkajah@gmail.com
+License: Software done to Stattus4 Startup
+Description: # Stattus4
+        Devs para a stattus4
+        
+        ##Spectral Filtering
+        
+        - Simple one based on mean mass of spectral frequencies.
+        - General Spectral Filtering function that allows to determines which statistics to base your filtering and to choose general Frequency-Time projection.
+        
+Keywords: physics,music,synthesis,psychophysics,symmetry,change ringing,campanology,group theory,toolbox,musical composition,art,artistic creation,experimental music,contemporary music,synthesizer,PCM,audio,sound,acoustics,signal processing,multimedia,psychoactive,rotation,permutation,mirror,speech,singing,speech synthesis,numpy,sonic art,hifi,hi-fi,noise,high fidelity,hyper-fidelity,LUT,vibrato,tremolo,AM,FM,ADSR,HRTF,spatialization,spatial location
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Telecommunications Industry
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Religion
+Classifier: Intended Audience :: Other Audience
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Multimedia :: Sound/Audio :: Sound Synthesis
+Classifier: Topic :: Multimedia :: Sound/Audio :: Editors
+Classifier: Topic :: Multimedia :: Sound/Audio :: Mixers
+Classifier: Topic :: Multimedia :: Sound/Audio :: Speech
+Classifier: Topic :: Artistic Software
+Classifier: Topic :: Other/Nonlisted Topic
+Classifier: Topic :: Text Processing
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: Topic :: Multimedia :: Sound/Audio :: Sound Synthesis
+Classifier: Programming Language :: Python :: 2
