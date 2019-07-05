@@ -1,16 +1,55 @@
-Architecture
+# Weakly-Supervised GCNN BiRNN
+
+## Summary: Attention and Localization
+
+In summary, in our framework, attention is used for
+global event-independent frame-level feature selection, while
+the event-dependent localization is used to find the locations
+of each event.
+
+## Weakly-Supervisation Labelling 
+
+The training process would be weakly supervised due to the unobserved latent variables, namely the acoustic 
+event locations. This is similar to the process of weakly-supervised image segmentation with only per-image labels.
+
+## Architecture
 - (Spectrogram) -(1)-> 2D-GCNN ->(?) BiRNN (temporal detail) ->(?)
 - Mean Average on FNN SigmoidxSoftmax output -> Cross entropy sum_batch(P log O + (1-P) log (1-O))
 
 (1) - Each spectrogram in the mini-batch is binned to have an n-by-n resolution in for the filter-bank size, 3x3 in this paper,
 ending to have Nf/3 channels output and Nt/3 timestamps, padded with same to output Nt/3 time in with frequencies bin of size 3.
 
-Mini-batch balancing
+## Mini-batch balancing
 
 -Balance batchs so the less frequent is at most 5 times lesser in quantity than the most frequent class sample.
 
-Hyperparam Tuning Strategies
+## Hyperparam Tuning Strategies
 
 - Dynamical learning-rate
 - Average accuracy of diverse hyperparams (cross-validated diverse hyperparams) [mean on cross validation sets and in all hyperparams]
   -- Implement algorithms to search in parameters space such Genetic Algorithm or others that dosnt depend on topological (i.e. convexity) requiriments.
+
+## Spectrogram
+
+### Audio Time-Series
+
+## Localization
+ Localizing the acoustic events occurring in the audio recording would
+be meaningful given that the labels are in chunk-level rather
+than frame-level.
+
+### Chunk-Level
+
+Definition of a chunk : division of the audio in the second scale (1 to 3).
+In each chunk, Definition of a Frame: chunking in smaller units of 32 samples/ms (in the case of 16khz sampling rate). This gives 500 Frames per Chunk .
+
+While the introduced attention method can alleviate the
+over-fitting problem especially when the input is chunk-level
+features. Longer input means more noise was fed into the
+model.
+
+### Output loss function
+Finally each frame can generate one prediction for the audio tags. Their results should be averaged together to obtain the final predictions.
+Feed final prediction in the final cross-entropy loss function and do backprop.
+Attention factor of the GCNN is applied (multiplied) to the output of each Frame to give local importance of the Frame in the Tagging
+
