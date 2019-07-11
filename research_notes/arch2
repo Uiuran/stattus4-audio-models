@@ -1,0 +1,6 @@
+(a) Downsampling path responsible for extracting coarse semantic features, followed by (b) an upsampling path trained
+to recover the input image resolution at the output of the model and, optionally, (c) a post-processing module (Conditional Random Fields)
+
+ResNets Shortcuts
+This additional shortcut paths have been shown not only to improve the segmentation accuracy but also to help the network optimization process, resulting in faster convergence of the training [8].
+
