@@ -29,6 +29,6 @@ Audio Models and statistical tools used in Devs for Stattus4 Start-Up of Water W
 
 ## Installation
 
-'''sh
+```sh
 pip install audiomodels
-'''
+```
