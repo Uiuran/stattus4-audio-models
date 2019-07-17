@@ -20,12 +20,12 @@ Audio Models and statistical tools used in Devs for Stattus4 Start-Up of Water W
 
 - Deep Neural Networks for Tagging Audio based on binary tagged database using Audio Features Models and expert geophonist
 - TODO: Road-Map Milestones:
--- 0. Implementar unidades.
--- 1. escolher um conjunto de parametros (tamanho de filtro da convolução, número de layers, tamanho do batch de dados por atualização da apredizagem).
--- 2. Validação do funcionamento do modelo com poucos dados triviais (ruido de duas frequencias diferentes a principio).
--- 3. Cross-validation.
--- 4. Check-pointing.
--- 5. Accuracy | Confusion Matrix | Business criteria choosing.
+ - 0. Implementar unidades.
+ - 1. escolher um conjunto de parametros (tamanho de filtro da convolução, número de layers, tamanho do batch de dados por atualização da apredizagem).
+ - 2. Validação do funcionamento do modelo com poucos dados triviais (ruido de duas frequencias diferentes a principio).
+ - 3. Cross-validation.
+ - 4. Check-pointing.
+ - 5. Accuracy | Confusion Matrix | Business criteria choosing.
 
 ## Installation
 
