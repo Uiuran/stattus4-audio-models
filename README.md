@@ -1,6 +1,8 @@
 # Audio Models Stattus4
 Audio Models and statistical tools used in Devs for Stattus4 Start-Up of Water Wasting Detection
 
+Note: this is a Alpha Version.
+
 ## Statistical Analysis
 
 - TODO: organizing and giving a coherent walkthrough
