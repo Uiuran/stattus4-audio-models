@@ -20,7 +20,7 @@ Note: this is a Alpha Version.
 
 ## Audio Deep Learning
 
-- Deep Neural Networks for Tagging Audio based on binary tagged database using Audio Features Models and expert geophonist
+- Deep Neural Networks for Tagging Audio based on binary tagged database using Audio Features Models.
 - TODO: Road-Map Milestones:
  - 0. Implementar unidades.
  - 1. escolher um conjunto de parametros (tamanho de filtro da convolução, número de layers, tamanho do batch de dados por atualização da apredizagem).
