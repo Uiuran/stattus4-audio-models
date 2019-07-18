@@ -27,7 +27,7 @@ Note: this is a Alpha Version.
  - 2. Validação do funcionamento do modelo com poucos dados triviais (ruido de duas frequencias diferentes a principio).
  - 3. Cross-validation.
  - 4. Check-pointing.
- - 5. Accuracy | Confusion Matrix | Business criteria choosing.
+ - 5. Neural Network Selection Criteria.
 
 ## Installation
 
