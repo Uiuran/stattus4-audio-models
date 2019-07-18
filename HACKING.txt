@@ -1,1 +1,15 @@
-.
+HACKING DEEP LEARNING PROTOCOLS FOR LEARNING FROM SCRATCH AND TRANSFER LEARNING (only in the case of symbiolic learned networks, otherwise highly unrooted patterns will lead the network to Mis-Classification, Wrong Generation and Deep Bugged Network, Hard not to Dump Data).
+
+Graph builders and run
+
+Hpp New Protocol For communication via Hyper Param Data without the Need To Rely only on Hyper Text Transfer Protocol
+
+#TODO
+
+Tranfer Learning Protocol  # Interface or Template must be local or Glocall according to the simbolic descriptors of the data.
+
+SigmaComplex
+
+Re-factor using design patterns 
+
+Use Bidirectional HPP or TLP protocols to do Sigma Syncretization Training and Translation
