@@ -7,12 +7,6 @@ from spect import *
 import librosa
 from random import shuffle
 
-#self.training_data = (train_images, train_labels.astype(np.int64))  # self.get_one_hot(train_labels, 10))
-#self.testing_data = (test_images, test_labels.astype(np.int64))  # self.get_one_hot(test_labels, 10))
-#return tf.data.Dataset.from_tensor_slices(self.testing_data)
-#iterator = tf.data.Iterator.from_structure(train_ds.output_types,train_ds.output_shapes)
-#data = iterator.get_next()
-
 class Stattus4AudioSpectrumSampler(BaseDataSampler):
   '''
      Data-loader for binary classified (see-below) mono audio (.wav).
@@ -50,6 +44,7 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
     self.nomes = [f for f in os.listdir(data_dir)]
     self.data_list_cv = []
     self.data_list_sv = []
+    # Versao Final estrutura de dados ([], [], np.ndarray())
 
     c = 0
     b = 0 

@@ -9,17 +9,19 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='audio-models',
+
+     name='audiomodels',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     # version='0.1.dev0',
     # according to https://semver.org/
-    version='0.0.alpha',
-
-    description='python package directed to audio models with semantic features identification',
+    version='0.0.dev3',
+    
+    description=' audio models package with semantic features identification',
     long_description=long_description,
+    long_description_content_type="text/markdown",
 
     # The project's main homepage.
     url='https://bitbucket.org/dpenalva/stattus4-audio-models/src/master/',
@@ -29,15 +31,16 @@ setup(
     author_email='dkajah@gmail.com',
 
     # Choose your license
-    license='Software done to Stattus4 Startup',
+    license='',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         # How mature is this project? Common values are
+        #   2 - Pre-Alpha
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 2 - Pre-Alpha',
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
@@ -89,7 +92,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     # TODO: test with virtualenv to know the dependencies
 
-    install_requires=['numpy', 'scipy', 'matplotlib','pandas','scipy','csv','os','librosa'],
+    install_requires=['numpy', 'scipy', 'matplotlib','pandas','librosa','tensorflow'],
 
     # List additional groups of dependencies here (e.g. development dependencies).
     # You can install these using the following syntax, for example:
@@ -120,4 +123,10 @@ setup(
     #        'sample=sample:main',
     #    ],
     #},
+    project_urls={
+                 'Documentation': 'https://packaging.python.org/tutorials/distributing-packages/',
+                 #'Funding': 'https://donate.pypi.org',
+                 #'Say Thanks!': 'http://saythanks.io/to/example',
+                 'Source': 'https://bitbucket.org/dpenalva/stattus4-audio-models/src/master/',
+                 'Tracker': 'https://github.com/pypa/sampleproject/issues',}
 )

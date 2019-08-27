@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import signal, linalg
 correlate = signal.correlate
     
@@ -72,9 +73,9 @@ def subbed_spect(measure,fs,plot=True):
   a = downsampling(np.array(measure),sampa )
   f,t,Sxx = signal.spectrogram(a,fsa,nfft=fsa/4,nperseg=fsa/5,noverlap=fsa/10,scaling='spectrum',mode='magnitude')
   #Cut zero variance part of spectra(useless recording)   
-  Sxx = Sxx[:,np.var(np.log(Sxx+1e-13),axis=0) > 0.5]
-  l = len(Sxx[0,:])
-  t = t[:l] 
+  #Sxx = Sxx[:,np.var(np.log(Sxx+1e-13),axis=0) > 0.5]
+  #l = len(Sxx[0,:])
+  #t = t[:l] 
   
   if plot:
     plt.figure()

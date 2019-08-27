@@ -8,6 +8,10 @@ from tensorflow.core.framework import node_def_pb2
 
 _conv_dim = lambda x,xx,dilation,stride : np.ceil((x-(xx-1)*dilation)/stride)
 
+_ff = lambda ord,loss : 10.0*ord if loss//ord < 1.0/ord else ord
+_fff = lambda ord,loss : ord/10.0 if loss//ord > 1.0/(ord/10.0) else ord
+ffff = lambda ord,loss: _fff(ord,loss) if _ff(ord,loss) == ord else _ff(ord,loss)
+
 def desambiguatename(opnamescope, scope):   
   '''
    Returns a new name according to the givem op namescope and the scope to embed the op namescope

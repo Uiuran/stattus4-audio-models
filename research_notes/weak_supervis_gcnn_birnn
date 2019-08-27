@@ -29,14 +29,21 @@ ending to have Nf/3 channels output and Nt/3 timestamps, padded with same to out
 - Average accuracy of diverse hyperparams (cross-validated diverse hyperparams) [mean on cross validation sets and in all hyperparams]
   -- Implement algorithms to search in parameters space such Genetic Algorithm or others that dosnt depend on topological (i.e. convexity) requiriments.
 
-## Spectrogram
+### Spectrogram
 
 ### Audio Time-Series
+
+## Attention
+
+Attention at Frame Level is a sigmoid function with the linearly transformed frame as an input signal
 
 ## Localization
  Localizing the acoustic events occurring in the audio recording would
 be meaningful given that the labels are in chunk-level rather
 than frame-level.
+Localization defines as a vector of num_of_classes_size with a linear transform of the input.
+It is of the same size of the output. It does gives a notion of the existence of at last 1 event of the classified tag in the frame.
+
 
 ### Chunk-Level
 
@@ -51,5 +58,6 @@ model.
 ### Output loss function
 Finally each frame can generate one prediction for the audio tags. Their results should be averaged together to obtain the final predictions.
 Feed final prediction in the final cross-entropy loss function and do backprop.
-Attention factor of the GCNN is applied (multiplied) to the output of each Frame to give local importance of the Frame in the Tagging
+Attention factor of the GCNN is applied (multiplied) to the output of each Frame to give local importance of the Frame in the Tagging.
 
+## Localization and Attention 
