@@ -13,6 +13,7 @@ from cgraphviz import *
 from tfhelper import *
 from dataloader import *
 from ckpt_hookers import *
+from domain import *
 
 import numpy as np
 import matplotlib.pyplot as plt
