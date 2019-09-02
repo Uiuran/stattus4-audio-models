@@ -50,3 +50,8 @@ return tf.data.Dataset.from_tensor_slices(self.testing_data)
 iterator = tf.data.Iterator.from_structure(train_ds.output_types,train_ds.output_shapes)
 data = iterator.get_next()
 ``` 
+
+## Future Data Struct for feeding TensorFlow Tensor Placeholders
+```python
+(unique_id_list,label_list,batch_input_tensor) = ([], [], np.ndarray()) 
+```

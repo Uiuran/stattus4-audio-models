@@ -31,33 +31,33 @@ tf.variable_scope = tf.compat.v1.variable_scope
 
 # CONVENIENCE DATA STRUCTS
 class AttrDict(dict):
-    
+
   __getattr__ = dict.__getitem__
-  __setattr__ = dict.__setitem__   
+  __setattr__ = dict.__setitem__
 
 #GRAPH BUILDER AND RUNNER CLASS
-class Builder:  
-  
+class Builder:
+
   def __init__(self, **kwargs):
     '''
-      Build a Tensorflow computational graph, from scratch.      
-        
-      Requires signal input parameters such:      
+      Build a Tensorflow computational graph, from scratch.
+
+      Requires signal input parameters such:
       - datasize: give a tuple with the signal input shape
-      - channels: self explain.      
-      
+      - channels: self explain.
+
       Note 0: You can always call Builder.get_directives(archblocktype) to know the inner params to the building block architecture.
       Note 1: The object guard reference for each op in a dictionary namescopes with the name of each block.
-    '''    
-    
-    self.namescopes = AttrDict()    
+    '''
+
+    self.namescopes = AttrDict()
     self.architectures = AttrDict()
     self.architectures.gcnn2d = self._gcnn2d
     self.architectures.reducemean = self._reducemean
     self.architectures.losscrossentropy = self._losscrossentropy
     self.architectures.softmax = self._softmax
     self.architectures.maxpooling2d = self._maxpooling2d
-    self.architectures.cnn2d = self._cnn2d   
+    self.architectures.cnn2d = self._cnn2d
 
     self.directives = {
         'gcnn2d': {'channels_out':1,
@@ -66,24 +66,24 @@ class Builder:
         'losscrossentropy':{'num_labels':1,
                             'batch':1,
                             'learningrate':1},
-        'softmax':{'num_labels':1},  
+        'softmax':{'num_labels':1},
         'residualgcnn1d':{'channels_out':1,
                           'filter_size':1},
         'gcnn1d':{'channels_out':1,
                    'filter_size':2
                  },
         'cnn2d':{'channels_out':1,
-                 'filter_size':2            
+                 'filter_size':2
                 },
-        'maxpooling2d':{'poolsize':2                                       
+        'maxpooling2d':{'poolsize':2
         },
         'signalimg':{'batch':1,
                    'datasize':2,
                    'channels':1,
                    'dtype':1
-                    }    
+                    }
     }
-    
+
     tf.reset_default_graph()
 
     try:
@@ -127,15 +127,17 @@ class Builder:
 
     if isinput:
       with self.graph.as_default():
-      # TODO - Different input shapes and data types (char,string,hexa,float,int...)                      
-        if self.num_input > 0:
-          self.signal_in.append(tf.placeholder(self.dtype,shape=(None,self.datasize[0],self.datasize[1],self.channels),name='signal_in'))           
+      # TODO - Different input shapes and data types (char,string,hexa,float,int...)
+        if self.num_input >= 0:
+          self.signal_in.append(tf.placeholder(self.dtype,shape=(None,
+              self.datasize[0][self.num_input-1],
+              self.datasize[1][self.num_input-1], self.channels), name='signal_in'))
           self.namescopes['signal_in'] = self.signal_in
           self.num_input -= 1
         
       return self.signal_in[-1]
     elif lastnamescope:
-      with self.graph.as_default():  
+      with self.graph.as_default():
         return self.graph.get_tensor_by_name(self.graph.get_operations()[-1].name+':0')
     else:
       try:
@@ -147,64 +149,64 @@ class Builder:
               if op.name.split('/')[0] == namescope:
                 opa = op 
             return self.graph.get_tensor_by_name(opa.name+':0')
-      except:        
-        sys.exit("Namescope not given to the input of architectures")            
-        
+      except:
+        sys.exit("Namescope not given to the input of architectures")
+
   def _compute_membatchsize(self):
     c = 0
     for key in self.namescopes.keys():
-      for tensor in self.namescopes[key]:          
+      for tensor in self.namescopes[key]:
         if type(tensor).__name__ == 'Tensor':
-          
-          c = c + tensor.get_shape().num_elements()          
+
+          c = c + tensor.get_shape().num_elements()
 
     return c*8.0/(1024.0*1024.0*1024.0)  
 
   def _compute_memusage(self):
-
+      
     c = 0      
-    for v in buildgraph.graph._collections['variables']:      
+    for v in buildgraph.graph._collections['variables']:
       c = c + v.shape.num_elements()
-    return c*4.0/(1024.0*1024.0*1024.0)      
-        
+    return c*4.0/(1024.0*1024.0*1024.0)
+
   def estimate_memusage(self,limit = 12.0):
     self.mem_usage = self._compute_membatchsize() + self._compute_memusage()
     if self.mem_usage > limit:
-      raise MemoryError('The model will allocate more memory, {}, than the given limit.'.format(self.mem_usage))    
-    
+      raise MemoryError('The model will allocate more memory, {}, than the given limit.'.format(self.mem_usage))
+
   def assertive(self, archname):
-    
+
     if archname == 'maxpooling2d':
       if hasattr(self, 'pool') != True or getattr(self, 'pool') == None:
-        raise NameError('{} pools not setted'.format(archname))  
+        raise NameError('{} pools not setted'.format(archname))
       if hasattr(self, 'numblock') != True or getattr(self, 'numblock') == None:
-        raise NameError('{} block number not setted'.format(archname))      
-        
+        raise NameError('{} block number not setted'.format(archname))
+
     else:
       if hasattr(self, 'deepness') != True or getattr(self, 'deepness') == None:
         raise NameError('{} deepness not setted'.format(archname))
-    
+
       if hasattr(self, 'numblock') != True or getattr(self, 'numblock') == None:
-        raise NameError('{} block number not setted'.format(archname))    
+        raise NameError('{} block number not setted'.format(archname))
 
   def _gcnn2d(self, **kwargs):
     try:
-        
+
       channels_out = kwargs['channels_out']
       filter_size = kwargs['filter_size']
-          
+
     except KeyError:
-        
-      sys.exit('Parameters Not Defined Error')  
-    
-    signal_in = self(**kwargs)                  
+
+      sys.exit('Parameters Not Defined Error')
+
+    signal_in = self(**kwargs)
     self.assertive('gcnn2d')
-    
+
     with self.graph.as_default():
       with tf.variable_scope('gcnn2d'+self.numblock+self.deepness[0]):
-        
+
         self.namescopes['gcnn2d'+self.numblock+self.deepness[0]] = []    
-        
+
         with self.graph.device(dev_selector(arg1='foo')('gcnn2d')):
           conv_linear = tf.keras.layers.Conv2D( channels_out, filter_size, padding='valid', name='conv_linear', use_bias=True, kernel_initializer=tf.initializers.lecun_normal(seed=137), bias_initializer=tf.initializers.lecun_normal(seed=137) )(signal_in)
           self.namescopes['gcnn2d'+self.numblock+self.deepness[0]].append(conv_linear)            
@@ -230,22 +232,22 @@ class Builder:
         
     except KeyError:        
         
-      sys.exit('Parameters Not Defined Error')  
-    
-    signal_in = self(**kwargs)                  
+      sys.exit('Parameters Not Defined Error')
+    signal_in = self(**kwargs)
+
     self.assertive('cnn2d')
-    
+
     with self.graph.as_default():
       with tf.variable_scope('cnn2d'+self.numblock+self.deepness[0]):
-        
-        self.namescopes['cnn2d'+self.numblock+self.deepness[0]] = []    
-        
+
+        self.namescopes['cnn2d'+self.numblock+self.deepness[0]] = []
+
         with self.graph.device(dev_selector(arg1='foo')('cnn2d')):
 
           conv_linear = tf.keras.layers.Conv2D( channels_out, filter_size, padding='valid', name='conv_linear', use_bias=True, kernel_initializer=tf.initializers.lecun_normal(seed=137), bias_initializer=tf.initializers.lecun_normal(seed=137), activation=None )(signal_in)
           lrelu = tf.keras.layers.LeakyReLU(alpha=0.3)(conv_linear)
-          self.namescopes['cnn2d'+self.numblock+self.deepness[0]].append(lrelu)            
-        
+          self.namescopes['cnn2d'+self.numblock+self.deepness[0]].append(lrelu)
+
         self.deepness.pop(0)
         if len(self.deepness) == 0:
           self.deepness = None      
@@ -260,7 +262,7 @@ class Builder:
     signal_in = self(**kwargs)
     
     self.assertive('maxpooling2d')
-    with self.graph.as_default():        
+    with self.graph.as_default(): 
       with tf.variable_scope('maxpooling2d'+self.numblock+self.pool[0]):  
         
         self.namescopes['maxpooling2d'+self.numblock+self.pool[0]] = []
@@ -269,73 +271,100 @@ class Builder:
         
     self.pool.pop(0)
     if len(self.pool) == 0:
-      self.pool = None      
+      self.pool = None
 
-  def _softmax(self, **kwargs):        
+  def _softmax(self, **kwargs):
 
-    try:        
-      num_labels = kwargs['num_labels']      
-    except Exception:        
-      sys.exit('Parameters Not Defined Error')       
-    
-    signal_in = self(**kwargs)    
-    self.assertive('softmax')   
-        
-    with self.graph.as_default():
-      with tf.variable_scope('softmax'+self.numblock+self.deepness[0]):
-        
-        self.namescopes['softmax'+self.numblock+self.deepness[0]] = []          
-        
-        with self.graph.device(dev_selector(arg1='foo')('softmax')):
-          logits = tf.contrib.layers.fully_connected(signal_in, num_labels, activation_fn=None, normalizer_fn=None, normalizer_params=None, weights_initializer=tf.initializers.lecun_normal(seed=731), weights_regularizer=None, biases_initializer=tf.initializers.lecun_normal(seed=777), biases_regularizer=None, reuse=None, variables_collections=None, outputs_collections=None, trainable=True, scope='logit')
-          self.namescopes['softmax'+self.numblock+self.deepness[0]].append(logits)
-            
-        with self.graph.device(dev_selector(arg1='foo')('softmax')):
-          softmax = tf.nn.softmax(logits,axis=0)            
-          self.namescopes['softmax'+self.numblock+self.deepness[0]].append(softmax)                      
-        
-        self.deepness.pop(0)
-        if len(self.deepness) == 0:
-          self.deepness = None         
-
-  def _losscrossentropy(self, **kwargs):    
-    
-    try:        
+    try:
       num_labels = kwargs['num_labels']
-      batch = 10 #kwargs['batch']   
-    except Exception:        
+    except Exception:
       sys.exit('Parameters Not Defined Error')
 
-    signal_in = self(**kwargs)            
+    signal_in = self(**kwargs)
+    self.assertive('softmax')
 
-    self.assertive('losscrossentropy') 
+    with self.graph.as_default():
+      with tf.variable_scope('softmax'+self.numblock+self.deepness[0]):
+
+        self.namescopes['softmax'+self.numblock+self.deepness[0]] = []
+
+        with self.graph.device(dev_selector(arg1='foo')('softmax')):
+
+          logits = tf.contrib.layers.fully_connected(signal_in, num_labels, activation_fn=None, normalizer_fn=None, normalizer_params=None, weights_initializer=tf.initializers.lecun_normal(seed=731), weights_regularizer=None, biases_initializer=tf.initializers.lecun_normal(seed=777), biases_regularizer=None, reuse=None, variables_collections=None, outputs_collections=None, trainable=True, scope='logit')
+
+          logitrank = tf.rank(logits,name='logit'+self.numblock+self.deepness[0])
+          self.namescopes['logit'+self.numblock+self.deepness[0]] = logitrank
+          self.namescopes['softmax'+self.numblock+self.deepness[0]].append(logits)
+
+        with self.graph.device(dev_selector(arg1='foo')('softmax')):
+
+          with tf.control_dependencies([
+            tf.Assert(
+              tf.equal(logitrank,4),
+              [logitrank,logits])
+            ]):
+            shape = np.shape(logits)
+
+            convolved_logit = tf.cond( tf.logical_or( tf.not_equal(shape[1], 1), tf.not_equal(shape[2], 1) ) , lambda:
+                                     self._matchconv(logits),
+                                     lambda: logits)
+
+            softmax = tf.nn.softmax(convolved_logit,axis=0)
+            self.namescopes['softmax'+self.numblock+self.deepness[0]].append(softmax)
+
+        self.deepness.pop(0)
+        if len(self.deepness) == 0:
+          self.deepness = None
+
+  def _matchconv(self,logit):
+
+    k1= logit.get_shape()[1].value
+    k2= logit.get_shape()[2].value
+    return tf.keras.layers.Conv2D( 2, (k1, k2), padding='valid',
+            name='matchconv', use_bias=True,
+            kernel_initializer=tf.initializers.lecun_normal(seed=137),
+            bias_initializer=tf.initializers.lecun_normal(seed=137),
+            activation=None )(logit)
+
+
+  def _losscrossentropy(self, **kwargs):
+
+    try:
+      num_labels = kwargs['num_labels']
+      batch = 10 #kwargs['batch']
+    except Exception:
+      sys.exit('Parameters Not Defined Error')
+
+    signal_in = self(**kwargs)
+
+    self.assertive('losscrossentropy')
     with self.graph.as_default():
       self.learning_rate = tf.placeholder(tf.float32,shape=(),name='learning_rate')
-    
-      with tf.variable_scope('losscrossentropy'+self.numblock+self.deepness[0]):        
 
-        self.namescopes['losscrossentropy'+self.numblock+self.deepness[0]] = []        
+      with tf.variable_scope('losscrossentropy'+self.numblock+self.deepness[0]):
+
+        self.namescopes['losscrossentropy'+self.numblock+self.deepness[0]] = []
         self.label_tensor = tf.placeholder(tf.float32,(None,num_labels), name='labels')
 
         with self.graph.device(dev_selector(arg1='foo')('losscrossentropy')):
           self.loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False, label_smoothing=0)(self.label_tensor, signal_in)
           self.namescopes['losscrossentropy'+self.numblock+self.deepness[0]].append(self.loss)
-           
 
-        with self.graph.device(dev_selector(arg1='foo')('losscrossentropy')):            
-          self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate) 
+
+        with self.graph.device(dev_selector(arg1='foo')('losscrossentropy')):
+          self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
           self.minimize_op = self.optimizer.minimize(self.loss)
           self.namescopes['losscrossentropy'+self.numblock+self.deepness[0]].append(self.optimizer)
           self.namescopes['losscrossentropy'+self.numblock+self.deepness[0]].append(self.minimize_op)
-            
-        self.init_op = tf.global_variables_initializer()            
+
+        self.init_op = tf.global_variables_initializer()
         self.saver = tf.train.Saver()
-        
-        #if 'limit' in kwargs:          
+
+        #if 'limit' in kwargs:
           #self.estimate_memusage(limit = kwargs['limit'])
         #else:
           #self.estimate_memusage()
-  
+
         self.deepness.pop(0)
         if len(self.deepness) == 0:
           self.deepness = None
@@ -344,14 +373,14 @@ class Builder:
 
     ord = np.mean( np.abs( np.diff( self.lossval[step-K:step] ) ) )
     ord = ffff(ord, self.lossval[step])
-      
+
     lr = ( ( ( np.log2(step*0.01+2.0)*self.lr)**(1./(np.log2(step*0.1+1.0)+1.0)))/( ( self.lossval[step]//(self.lossval[step]*0.05) )*(1.0 + step*(ord//(0.002) ) ) ) )%0.001
-    return lr = (lr + (lr // 0.0000005) )% 0.0003 + 0.0000005
+    return (lr + (lr // 0.0000005) )% 0.0003 + 0.0000005
         
   def _reducemean(self, **kwargs):
      
     scope_tensor_name = find_softmax(self.graph)
-    inputs = get_tensor_list_from_scopes(self.graph, scope_tensor_name)    
+    inputs = get_tensor_list_from_scopes(self.graph, scope_tensor_name)
     
     self.assertive('reducemean')
     
@@ -364,9 +393,10 @@ class Builder:
           rm = tf.math.reduce_mean( inputs, axis=1 )
           self.namescopes['reducemean'+self.numblock+self.deepness[0]].append(rm)
           rmshape = tf.shape(rm)
-          rmean = tf.reshape(rm, shape=(rmshape[0], rmshape[2]))   
+          rmean = tf.reshape(rm, shape=(rmshape[0], rmshape[2]))
           self.namescopes['reducemean'+self.numblock+self.deepness[0]].append(rmean)
-            
+          
+       
         self.deepness.pop(0)
         if len(self.deepness) == 0:
           self.deepness = None
@@ -404,7 +434,7 @@ class Builder:
       self.numblock = '_'+str(numblock)
         
   # Definitions: Build computation graph and run session
-  def build_graph_module(self, arch, show_cgraph=True, verbose=False, **kwargs):
+  def build_graph_module(self, arch, show_cgraph=False, verbose=False, **kwargs):
     '''
       Build a Tensorflow computational graph.building_function
       Currently supports 1-D gcnn or residual 1-D gcnn for unidimensional variable and 2D gcnn for bidimensional frame data.
@@ -423,9 +453,16 @@ class Builder:
       if show_cgraph:
         print_display_cgraph(self.graph, verbose=verbose)      
     
-  def run_cgraph(self, feed_dict, op_to_run = '', number_of_runs = 10, mode = 'minimize', new_session=True, ckpt_dir_name='./ckpt/model', output_log = True, adaptative_lr=True, k=3, stop=0.0001, verbose=True):
+  def run_cgraph(self, feed_dict, op_to_run = '', number_of_runs = 10, mode =
+          'minimize', new_session=True, ckpt_dir_name='./ckpt/model',
+          output_log = True, adaptative_lr=True, k=3, stop=0.0001,
+          verbose=False):
     '''
-     Run Session
+     Run Session. 
+     
+     Returns a list of tuples with values of output tensors passed to op_to_run. If op_to_run = '' (standard) does not evaluate any operation, only do the optimization.
+    
+     If mode = 'minimize' (standard) the minimizer will backprop the gradients calculated with the feedeed batch of data. It will save the model automatically if the loss function is lower than stop argment.
     '''
 
     if new_session:
@@ -440,55 +477,100 @@ class Builder:
       options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
       run_metadata = tf.RunMetadata()
       opval = []
-      self.lossval = np.zeros(number_of_runs)        
+      self.lossval = np.zeros(number_of_runs)
 
       session.run(self.init_op)
-      print('Global Variables Initialized')        
-      
+      print('Global Variables Initialized')
       self.op_to_run = op_to_run
       #with tf.summary.FileWriter('/home/penalvad/stattus4/stattus4-audio-models/notebooks/',graph=self.graph,session=session) as writer:
-        #tf.summary.initialize(graph=self.graph,session=session)               
-             
+        #tf.summary.initialize(graph=self.graph,session=session)
+
       for step in range(number_of_runs):
-        
         if mode == 'minimize':
-            
+
           loss_value, learning_rate,_ = session.run([self.loss, self.learning_rate, self.minimize_op], feed_dict=feed_dict)
           self.lossval[step] = loss_value
-            
-          if step == 0:  
-            self.lr = learning_rate  
-                        
-          if step % 1 == 0 and verbose:        
-            print("Step:", step, " Loss:", self.lossval[step])               
+
+          if step == 0:
+            self.lr = learning_rate
+
+          if step % 1 == 0:
+            print('\n')
+            print("Step:", step, " Loss:", self.lossval[step])
+            print('\n')
 
           if step >= k and adaptative_lr:
-            
+
             if self.lossval[step] < self.lossval[step-1] and self.lossval[step] < stop:
-              print('salvando modelo...')                  
+              print('salvando modelo...')
+              print('\n')
               self.saver.save(session, ckpt_dir_name)
 
             feed_dict[self.learning_rate]= self.adaptative_learning_rate(step,k)
 
             if verbose:
-              print('\n')                                        
+              print('\n')
               print('learning rate ', self.adaptative_learning_rate(step,k) )
               print('\n')
 
           elif step >= k:
 
             if self.lossval[step] < self.lossval[step-1] and self.lossval[step] < stop:
-              print('salvando modelo...')                  
+              print('salvando modelo...')
+              print('\n')
               self.saver.save(session, ckpt_dir_name)
 
             feed_dict[self.learning_rate]= self.lr
-          
-        if self.op_to_run != '':
-          op_value = session.run([self.op_to_run], feed_dict=feed_dict)
-          opval.append( op_value )
-          print(op_value)   
 
-    return opval                          
+        if self.op_to_run != '':
+          op_values = session.run(self.op_to_run, feed_dict=feed_dict)
+          opval.append( op_values )
+          if verbose:
+            print('\n')
+            print(op_values)
+            print('\n')
+
+    return opval
+
+# Restoring Checkpointed Model by loading model meta data (model.meta), and rebuilding it from lastest Checkpoint (which is referenced in checkpoint file that is together with map file model.index and variables data file model.data-....)
+
+def re_feed(sess, data_train, ltrain):
+
+  feed_dict = {}
+  feed_dict[sess.graph.get_tensor_by_name('signal_in:0')] = data_train[:4,:,:8,:]
+
+  for i in np.arange(1,10):
+    feed_dict[sess.graph.get_tensor_by_name('signal_in_'+str(i)+':0')] = data_train[:4,:,8*i:8*(i+1),:]
+  feed_dict[sess.graph.get_tensor_by_name('losscrossentropy/labels:0')] = ltrain[:4]
+  feed_dict[sess.graph.get_tensor_by_name('learning_rate:0')] = 0.0001
+
+  return feed_dict
+
+def restore_model(data_train, ltrain, model_dir_name = './ckpt/model'):
+  '''
+   Function returns reloaded computational graph
+  '''
+  graph = tf.Graph()
+  with graph.as_default():
+
+    saver = tf.train.import_meta_graph(model_dir_name+".meta", import_scope='')
+
+    with tf.Session(graph=graph) as sess:
+
+    # Restore variables from disk.
+
+      saver.restore(sess, tf.train.latest_checkpoint('./ckpt/') )
+
+      feed_dict = re_feed(sess, data_train, ltrain)
+
+      #for op in graph.get_operations():
+      #print(2*'\n')
+      #print(op.name)
+      minimize_op = sess.graph.get_operation_by_name('losscrossentropy/Adam')
+      loss = sess.graph.get_tensor_by_name('losscrossentropy/categorical_crossentropy/weighted_loss/value:0')
+      acc = sess.graph.get_tensor_by_name('reducemean/Mean:0')
+
+  return graph, feed_dict, minimize_op, loss, acc
 
 # Specific Exception Handler for the Input Datasets, not to be used yet
 

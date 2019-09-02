@@ -17,7 +17,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     # version='0.1.dev0',
     # according to https://semver.org/
-    version='0.0.dev3',
+    version='0.1.dev3',
     
     description=' audio models package with semantic features identification',
     long_description=long_description,
@@ -92,7 +92,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     # TODO: test with virtualenv to know the dependencies
 
-    install_requires=['numpy', 'scipy', 'matplotlib','pandas','librosa','tensorflow'],
+    install_requires=['numpy', 'scipy', 'matplotlib','pandas','librosa','tensorflow','pillow'],
 
     # List additional groups of dependencies here (e.g. development dependencies).
     # You can install these using the following syntax, for example:
