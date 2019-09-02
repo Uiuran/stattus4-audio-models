@@ -9,7 +9,7 @@ import librosa
 from random import shuffle
 from domain import LadderSlice
 
-class Stattus4AudioSpectrumSampler(BaseDataSampler): 
+class Stattus4AudioSpectrumSampler(BaseDataSampler):
   '''
      Data-loader for binary classified (see-below) mono audio (.wav).
     The loader automaticly transforms the data in a Spectrogram (If it was not a Spectrogram yet) with given or standard size using windowed fft.
@@ -19,14 +19,14 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
 
     Note: this is a class equilibrated data sampler, it's not implemented for audio data that has much more of one label than the other.
   '''
-  
+
 # Doing divide by sample label and batch_size, do generator with yield
   def __init__(self, data_dir, num_samples = 50, number_of_batches = 10, split_tax = 0.2, freq_size = 600, time_size = 50, same_data_validation = True, test_dir = '', ):
     '''
       Given data_dir (directory of data) it injects an amount of data of number_of_batches with 2*num_samples for each batch into memory (num_samples for each labeled data).
       Data points are a tuple with unique_id in position 0, label in position 1 and spectrogram in position 2. The unique_id and the label are extracted from audio filename loaded.
-    '''         
-    super(Stattus4AudioSpectrumSampler,self).__init__(data_dir)  
+    '''
+    super(Stattus4AudioSpectrumSampler,self).__init__(data_dir)
 
     self.split_tax = split_tax
     self.nbatches = number_of_batches
@@ -37,11 +37,11 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
 
     if self.split_tax > 0.5:
       self.num_of_training_samples = (self.num_samples*self.split_tax//1)
-      self.num_of_test_samples = (self.num_samples*(1.-self.split_tax)//1)  
+      self.num_of_test_samples = (self.num_samples*(1.-self.split_tax)//1)
     else:
       self.num_of_training_samples = (self.num_samples*(1.0-self.split_tax)//1)
-      self.num_of_test_samples = (self.num_samples*self.split_tax//1) 
-  
+      self.num_of_test_samples = (self.num_samples*self.split_tax//1)
+
     self.data_dir = data_dir
     self.test_dir = test_dir
     self.nomes = [f for f in os.listdir(data_dir)]
@@ -66,7 +66,7 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
     self.datavalidsame = same_data_validation    
 
     for i in range(len(self.nomes)):
-    
+ 
       if (self.nomes[i].find('sv') != -1 or self.nomes[i].find('SV') != -1) and c < self.num_samples:
 
         label = self.nomes[i][0:2]    
