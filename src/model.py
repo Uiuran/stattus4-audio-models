@@ -37,6 +37,62 @@ class AttrDict(dict):
   __setattr__ = dict.__setitem__
 
 #GRAPH BUILDER AND RUNNER CLASS
+
+# Hyperparam choosing class
+class Hyperparameter(object):
+    '''
+     Template class for hyperparam selection.
+    '''
+    def __init__(self, data_type = 'img', frame_data = 'width', **kwargs):
+        self.data_type = data_type
+        self.frame_data = frame_data
+        self.hyperparameters = kwargs
+
+    def __call__(self, directive):
+        pass
+
+    def configure(self):
+        pass
+
+class GCNNMaxPooling(Hyperparameter):
+    '''
+      Hyperparameter Selection  for Gated Convolutional Neural Network with Max
+     Pooling 2D.
+      Use the caller with length 2 directive sequence (a name and a value, the name
+      must be a string) to get hyperparameters tunners.
+    '''
+    def __init__(self, data_type = 'img', frame_data = 'width', **kwargs):
+        super( GCNNMaxPooling, self).__init__(data_type = data_type, frame_data= 'width', kwargs)
+
+    def __call__(self, directive):
+
+        if directive[0] == 'num_bank':
+            return self.filterbank[directive[1]]
+
+        if directive[0] == 'num_pooling':
+            return self.maxpooling[directive[1]]
+
+        if directive[0] == 'maximal_filter': 
+            return self.max_filter[directive[1]]
+
+        if directive[0] == 'minimal_filter':
+            return self.min_filter[directive[1]]
+
+        if directive[0] == 'maximal_bank_blocks':
+            return self.max_blocks
+
+        if directive[0] == 'minimal_bank_blocks':
+            return self.min_blocks
+        
+        if directive[0] == 'gate_positions':
+            return self.gate_positions[directive[1]]
+
+        if directive[0] == 'maximal_number_of_gates':
+            return self.num_of_gates
+
+    def configure(self):
+        pass
+
 class Builder:
 
   def __init__(self, **kwargs):
@@ -88,42 +144,42 @@ class Builder:
     tf.reset_default_graph()
 
     try:
-        
+
       self.datasize = kwargs['datasize']
       self.channels = '' or kwargs['channels']
       self.dtype = kwargs['dtype']
-    
+
     except KeyError:
-        
-      sys.exit('Signal Input Not Defined Error')      
-    
+
+      sys.exit('Signal Input Not Defined Error')
+
     try:
-        
+
       self.num_input = kwargs['num_input']
-    
+
     except:
-        
+
       self.num_input = 1
-      
+
     self.graph = tf.Graph()
-    self.signal_in = []  
-    self.arch_blocks = {}    
-    
-  def __call__(self, **kwargs):        
-   
+    self.signal_in = []
+    self.arch_blocks = {}
+
+  def __call__(self, **kwargs):
+
     try:
       isinput = kwargs['isinput']
       if type(isinput) != type(bool()):
         isinput = True
     except:
       isinput = False
-    
+
     try:
       lastnamescope= kwargs['lastnamescope']
       if type(lastnamescope) != type(bool()):
         lastnamescope= False
     except:
-      lastnamescope= True       
+      lastnamescope= True
 
 
     if isinput:
@@ -135,7 +191,7 @@ class Builder:
               self.datasize[1][self.num_input-1], self.channels), name='signal_in'))
           self.namescopes['signal_in'] = self.signal_in
           self.num_input -= 1
-        
+
       return self.signal_in[-1]
     elif lastnamescope:
       with self.graph.as_default():
@@ -148,7 +204,7 @@ class Builder:
             opa = 0
             for op in self.graph.get_operations():
               if op.name.split('/')[0] == namescope:
-                opa = op 
+                opa = op
             return self.graph.get_tensor_by_name(opa.name+':0')
       except:
         sys.exit("Namescope not given to the input of architectures")
@@ -161,11 +217,11 @@ class Builder:
 
           c = c + tensor.get_shape().num_elements()
 
-    return c*8.0/(1024.0*1024.0*1024.0)  
+    return c*8.0/(1024.0*1024.0*1024.0)
 
   def _compute_memusage(self):
-      
-    c = 0      
+
+    c = 0
     for v in buildgraph.graph._collections['variables']:
       c = c + v.shape.num_elements()
     return c*4.0/(1024.0*1024.0*1024.0)
