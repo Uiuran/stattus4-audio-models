@@ -9,8 +9,7 @@ import librosa
 from random import shuffle
 from domain import LadderSlice
 
-class Stattus4AudioSpectrumSampler(BaseDataSampler):
-    M
+class Stattus4AudioSpectrumSampler(BaseDataSampler): 
   '''
      Data-loader for binary classified (see-below) mono audio (.wav).
     The loader automaticly transforms the data in a Spectrogram (If it was not a Spectrogram yet) with given or standard size using windowed fft.

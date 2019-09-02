@@ -8,6 +8,7 @@ class DomainSlice(object):
         '''
         self.max=setmax
         self.min=setmin
+        self._n = 0
         self.slices = []
 
     def configure(self):
@@ -28,9 +29,14 @@ class DomainSlice(object):
 
         abstract method to be implemented
         '''
-        pass
+        if self._n < self.number_of_steps:
+            slic = self.slices[self._n]
+            self._n += 1
+            return slic
+        else:
+            raise StopIteration()
 
-    def __next__(self):
+    def next(self):
         return self.get_slice()
 
     def __iter__(self):
@@ -65,18 +71,5 @@ class LadderSlice(DomainSlice):
         for i in range(self.number_of_steps):
             self.slices.append( ( self.min+i*int(self.step_size/2),
                 self.min + i*int(self.step_size/2) + self.step_size) )
-        self._n = 0
 
-    def get_slice(self):
-        '''
-         Returns tuple with 2 elements corresponding to the lower and
-        upper bound of the slice respectively. The number of bounds and the
-        size  of the slice depends upon slice mode.
-        '''
-
-        if self._n < self.number_of_steps:
-            slic = self.slices[self._n]
-            self._n += 1
-            return slic
-        else:
-            raise StopIteration()
+# TODO- class EmbeddedSlice
