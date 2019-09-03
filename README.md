@@ -17,7 +17,7 @@ Note: this is a Alpha Version.
 
 Milestones
 02/09/2018 -
-- Classificador pronto para estrutura de dados(imagem) de qualquer tamanho. Done
+- Classificador pronto para estrutura de dados(imagem) de qualquer tamanho.Done
 - Modelo pronto para Framing Diverso. Done
 - Modelo Pronto para Hyperparameter tuning. Done
 - Builder de modelo final. Fazendo
@@ -32,10 +32,22 @@ Milestones
  -- 5. Neural Network Selection Criteria.
 
 ## Installation
-With conda installed:
-```python
+
+```bash
 git clone https://github.com/Uiuran/stattus4-audio-models.git
 cd ~/path/to/dir/stattus4-audio-models/
 conda activate env
 pip install .
+``` 
+or
+```bash
+git clone https://dpenalva@bitbucket.org/dpenalva/stattus4-audio-models.git
+cd ~/path/to/dir/stattus4-audio-models/
+conda activate env
+pip install .
+``` 
+
+## Usage 
+```python
+import audiomodels.model as audio
 ``` 
