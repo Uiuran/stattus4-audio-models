@@ -51,7 +51,16 @@ iterator = tf.data.Iterator.from_structure(train_ds.output_types,train_ds.output
 data = iterator.get_next()
 ``` 
 
+## Hyperparameter choosing based on a bunch of previously given setups (including data or data feature preprocessing and analysis. To be implemented in a template abstract class.
+
+actual implementation is aimed to suply an binary class for water system leakage. The above generalization is to come in the future...
+```python
+class Hyperparameter(object):
+...
+``` 
 ## Future Data Struct for feeding TensorFlow Tensor Placeholders
 ```python
 (unique_id_list,label_list,batch_input_tensor) = ([], [], np.ndarray()) 
 ```
+
+

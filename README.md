@@ -17,6 +17,7 @@ Note: this is a Alpha Version.
 
 Milestones
 02/09/2018 -
+- Classificador pronto para estrutura de dados(imagem) de qualquer tamanho.Done
 - Modelo pronto para Framing Diverso. Done
 - Modelo Pronto para Hyperparameter tuning. Done
 - Builder de modelo final. Fazendo

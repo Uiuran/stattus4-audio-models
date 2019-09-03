@@ -17,7 +17,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     # version='0.1.dev0',
     # according to https://semver.org/
-    version='0.1.dev3',
+    version='0.2.dev3',
     
     description=' audio models package with semantic features identification',
     long_description=long_description,
@@ -40,7 +40,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
