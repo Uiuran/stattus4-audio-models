@@ -32,3 +32,22 @@ Milestones
  -- 5. Neural Network Selection Criteria.
 
 ## Installation
+
+```bash
+git clone https://github.com/Uiuran/stattus4-audio-models.git
+cd ~/path/to/dir/stattus4-audio-models/
+conda activate env
+pip install .
+``` 
+or
+```bash
+git clone https://dpenalva@bitbucket.org/dpenalva/stattus4-audio-models.git
+cd ~/path/to/dir/stattus4-audio-models/
+conda activate env
+pip install .
+``` 
+
+## Usage 
+```python
+import audiomodels.model as audio
+``` 
