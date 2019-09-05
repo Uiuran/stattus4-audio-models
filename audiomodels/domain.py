@@ -2,7 +2,7 @@ from template import NotDomainSliceError
 import warnings
 import numpy  as np
 
-class DomainSlice(object):
+class DataDomainSlicer(object):
 
     def __init__(self, setmax, setmin, number_of_steps):
         '''
@@ -10,7 +10,7 @@ class DomainSlice(object):
          Get domain bounds and set the domain slicing method.
         '''
         self.max=setmax
-        self.min=setmin        
+        self.min=setmin
         self.number_of_steps = number_of_steps
         self.slices = []
 
@@ -61,7 +61,7 @@ class DomainSlice(object):
         return self
 
 
-class LadderSlice(DomainSlice):
+class LadderSlice(DataDomainSlicer):
     '''
       Slice the domain according to ladder-wise steps, that is, each step is
      half superpose with the previous step. Returns  steps according to the
@@ -69,7 +69,7 @@ class LadderSlice(DomainSlice):
     '''
 
     def  __init__(self, setmax, setmin, number_of_steps):
-        super(LadderSlice, self).__init__(setmax, setmin, number_of_steps)
+        super(DataLadderSlicer, self).__init__(setmax, setmin, number_of_steps)
         self.configure()
 
     def configure(self):
@@ -78,7 +78,7 @@ class LadderSlice(DomainSlice):
         infimum. In practice it returns a list of tuples, to attribute slices, each with the lower
         and the upper bound of the slice.
         ''' 
-        super( LadderSlice, self).configure()
+        super( LadderSlicer, self).configure()
         self.step_size = int(2*(self.max - self.min)/(self.number_of_steps+1))
 
         while self.step_size == 0:
@@ -96,7 +96,7 @@ class LadderSlice(DomainSlice):
             self.slices.append( ( self.min+i*int(self.step_size/2),
                 self.min + i*int(self.step_size/2) + self.step_size) )
 
-class EmbeddedSlice(DomainSlice):
+class EmbeddedSlice(DataDomainSlicer):
     '''
       Slice domain according to a given Fater DomainSlice and a Mater
      DomainSlice. Fater and Mater slicers may be any DomainSlice object
@@ -117,26 +117,26 @@ class EmbeddedSlice(DomainSlice):
     '''
     def __init__(self, setmax, setmin, number_of_steps, mater_slicer, fater_slicer,
             recursive=True, recursive_generator='Fater', recursive_depth=2):
-        super(EmbeddedSlice, self).__init__(setmax, setmin, number_of_steps)
+        super(EmbeddedSlicer, self).__init__(setmax, setmin, number_of_steps)
         #check slicer objects
-        if isinstance(fater_slicer,DomainSlice) and isinstance(mater_slicer,DomainSlice): 
+        if isinstance(fater_slicer,DataDomainSlicer) and isinstance(mater_slicer,DataDomainSlicer):
             self.mater = mater_slicer
-            self.fater = fater_slicer            
+            self.fater = fater_slicer
             if recursive:
                 self.generator = recursive_generator
                 self.depth = recursive_depth
                 self.recursive = recursive
         else:
-            if not isinstance(fater_slicer,DomainSlice):
+            if not isinstance(fater_slicer,DataDomainSlicer):
                 message = fater_slicer.__class__
-            if not isinstance(mater_slicer,DomainSlice):
+            if not isinstance(mater_slicer,DataDomainSlicer):
                 message = message+' and '+mater_slicer.__class__
             raise NotDomainSliceError(message)
 
         self.configure()
 
     def configure(self):
-        super( EmbeddedSlice, self).configure()
+        super( EmbeddedSlicer, self).configure()
         mater_slices = [i for i in self.mater]
         fater_slices = []
         if self.recursive:
