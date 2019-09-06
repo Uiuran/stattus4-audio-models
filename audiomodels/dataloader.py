@@ -7,7 +7,7 @@ from spect import *
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import librosa
 from random import shuffle
-from domain import LadderSlice
+from domain import LadderSlicer
 
 class Stattus4AudioSpectrumSampler(BaseDataSampler):
   '''

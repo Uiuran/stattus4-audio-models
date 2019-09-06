@@ -12,7 +12,6 @@ class DataDomainSlicer(object):
         self.max=setmax
         self.min=setmin
         self.number_of_steps = number_of_steps
-        self.slices = []
 
     def configure(self):
         '''
@@ -33,11 +32,19 @@ class DataDomainSlicer(object):
         if setmin < self.max:
             self.min = setmin
 
+    def set_number_of_steps(self, steps_num):
+        self.number_of_steps = steps_num
+
     def reset_domain(self, setmin, setmax):
         self.max = 100000000000
         self.min = -1
         self.set_min(setmin)
         self.set_max(setmax)
+
+    def reset(self, setmin, setmax, steps_num):
+        self.reset_domain(setmin, setmax)
+        self.set_number_of_steps(steps_num)
+        self.configure()
 
     def get_slice(self):
         '''
@@ -61,7 +68,7 @@ class DataDomainSlicer(object):
         return self
 
 
-class LadderSlice(DataDomainSlicer):
+class LadderSlicer(DataDomainSlicer):
     '''
       Slice the domain according to ladder-wise steps, that is, each step is
      half superpose with the previous step. Returns  steps according to the
@@ -69,7 +76,7 @@ class LadderSlice(DataDomainSlicer):
     '''
 
     def  __init__(self, setmax, setmin, number_of_steps):
-        super(DataLadderSlicer, self).__init__(setmax, setmin, number_of_steps)
+        super(LadderSlicer, self).__init__(setmax, setmin, number_of_steps)
         self.configure()
 
     def configure(self):
@@ -96,7 +103,7 @@ class LadderSlice(DataDomainSlicer):
             self.slices.append( ( self.min+i*int(self.step_size/2),
                 self.min + i*int(self.step_size/2) + self.step_size) )
 
-class EmbeddedSlice(DataDomainSlicer):
+class EmbeddedSlicer(DataDomainSlicer):
     '''
       Slice domain according to a given Fater DomainSlice and a Mater
      DomainSlice. Fater and Mater slicers may be any DomainSlice object
