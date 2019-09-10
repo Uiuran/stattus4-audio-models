@@ -12,38 +12,38 @@ _ff = lambda ord,loss : 10.0*ord if loss//ord < 1.0/ord else ord
 _fff = lambda ord,loss : ord/10.0 if loss//ord > 1.0/(ord/10.0) else ord
 ffff = lambda ord,loss: _fff(ord,loss) if _ff(ord,loss) == ord else _ff(ord,loss)
 
-def desambiguatename(opnamescope, scope):   
+def desambiguatename(opnamescope, scope):
   '''
    Returns a new name according to the givem op namescope and the scope to embed the op namescope
-  ''' 
+  '''
   istag = scope.find('_')
-  first = opnamescope.find('/')  
+  first = opnamescope.find('/')
   appendname = scope.find('//')
-  if scope == '' or (appendname != -1 and scope.split('//')[0] == orgname.split('/')[0]):  
+  if scope == '' or (appendname != -1 and scope.split('//')[0] == orgname.split('/')[0]):
     new_name = orgname
-  elif istag != -1:    
+  elif istag != -1:
     if appendname != -1:
       names = orgname.split('/')
       if names[0] == scope[:istag]:
         new_name = names[0]+scope[istag:appendname]+orgname[first:]
       elif scope[:istag] != "":
-        new_name = scope[:istag]+orgname[first:] 
+        new_name = scope[:istag]+orgname[first:]
       else:
-        new_name = names[0]+scope+orgname[first:] 
+        new_name = names[0]+scope+orgname[first:]
     else:
       names = orgname.split('/')
       if names[0] == scope[:istag]:
         new_name = names[0]+scope[istag:]+orgname[first:]
       elif scope[:istag] != "":
-        new_name = scope[:istag]+orgname[first:] 
+        new_name = scope[:istag]+orgname[first:]
       else:
-        new_name = names[0]+scope+orgname[first:]         
+        new_name = names[0]+scope+orgname[first:]
   elif appendname != -1 and scope.split('//')[0] != orgname.split('/')[0]:
     new_name = scope[:appendname]+'/'+ orgname
   else:
-    new_name = scope + orgname[orgname.find('/'):]   
+    new_name = scope + orgname[orgname.find('/'):]
 
-  return new_name    
+  return new_name
 
 def get_listeners(graph, scope = 'signal_in/'):
   '''
@@ -83,13 +83,17 @@ def get_op_fromscope(graph,scope='signal_in/',opname = 'init', **kwargs):
     else:
       raise NameError('Operation not found')
 
-def calculatefilter(initialdim, filterlist):
+def calculatefilter(initialdim, filterlist, dim=0):
 
   a = initialdim  
   b = 0 
   c = 0
   for filter in filterlist:
-    a = _conv_dim(a,filter,1,1)
+    if hasattr(filter,'__iter__'):
+      fir = filter[dim]
+    else:
+      fir = filter
+    a = _conv_dim(a,fir,1,1)
     if a < 0:
       b = a
       c = 1
