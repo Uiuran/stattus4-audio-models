@@ -75,7 +75,7 @@ class Hyperparameter(object):
            frame domain, if not given defaults to LadderSlicer.
     '''
 
-    def __init__(self, data_type, frame_data = 'width',
+    def __init__(self, data_type, domain_compact, frame_data = 'width',
             frame_selection='all', **kwargs):
         self.data_type = data_type # Not in Use
         self.frame_data = frame_data # Not in Use
@@ -195,10 +195,12 @@ class GCNNMaxPooling(Hyperparameter):
      Pooling 2D.
 
     '''
-    def __init__(self, data_type = 'img', frame_data = 'width',
-            frame_selection = 'fraction', **kwargs):
-        super( GCNNMaxPooling, self).__init__(data_type = data_type,
-                frame_data= frame_data, frame_selection=frame_selection, **kwargs)
+    def __init__(self, data_type='img', domain_compact=[(0.0,200.0),(0.0,200.0)], frame_data = 'width',
+                 frame_selection='fraction', **kwargs):
+        super( GCNNMaxPooling, self).__init__(data_type=data_type,
+                                              domain_compact=domain_compact,
+                                              frame_data= frame_data,
+                                              frame_selection=frame_selection, **kwargs)
         self.configure()
 
     def __call__(self, directive):

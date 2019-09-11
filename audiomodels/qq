@@ -1,0 +1,19 @@
+[0;31mInit signature:[0m [0mEmbeddedSlicer[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mdata_domain[0m[0;34m,[0m [0mnumber_of_steps[0m[0;34m,[0m [0mmater_slicer[0m[0;34m,[0m [0mfater_slicer[0m[0;34m,[0m [0mrecursive[0m[0;34m=[0m[0mTrue[0m[0;34m,[0m [0mrecursive_generator[0m[0;34m=[0m[0;34m'Fater'[0m[0;34m,[0m [0mrecursive_depth[0m[0;34m=[0m[0;36m2[0m[0;34m)[0m[0;34m[0m[0m
+[0;31mDocstring:[0m     
+ Slice domain according to a given Fater DomainSlice and a Mater
+DomainSlice. Fater and Mater slicers may be any DomainSlice object
+obeying the following conditions:
+ - Mater slice will slice the given data domain as usual.
+ - Fater slice will then slice each Mater slice as usual.
+ - Optional:
+   --recursive: if its true will further slice embedded with
+   Father or Mother slicing scheme up to a deepness. Default to True.
+   --recursive_generator: only if recursive is true, choose between Fater
+   and Mater scheme to recursevely slice the embedded domains. Defaults to
+   Fater.
+   --recursive_depth: number of time slicer will try to generate
+   sub-intervals from bigger intervals given from above, starting by the
+   Fater Slice, the intervals will be generated acording to
+   recursive_generator choosen. Defaults to 2.
+[0;31mFile:[0m           ~/stattus4/stattus4-audio-models/audiomodels/domain.py
+[0;31mType:[0m           type

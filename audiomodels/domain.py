@@ -4,16 +4,38 @@ import numpy  as np
 
 class DataDomainSlicer(object):
 
-    def __init__(self, setmax, setmin, number_of_steps):
+    def __init__(self, data_domain, number_of_steps):
         '''
          Abstract Class.
          Get domain bounds and set the domain slicing method.
         '''
-        self.max=setmax
-        self.min=setmin
         self.number_of_steps = number_of_steps
 
-    def configure(self):
+    def assert_domain(self, data_domain):
+        '''
+          Assert that given data_domain is a sequence of sequences, each having
+         length 2 and type int or float for lower bound and upper bound of the compact.
+        '''
+
+        assert hasattr(data_domain,'__iter__'),'data_domain must be a\
+            sequence of with the length of data dimensionality.'
+
+        for i in range(len(data_domain)):
+            assert hasattr(data_domain[i],'__iter__') and\
+                len(data_domain[i])==2,'dimension {}'.format(i)+' bounds\
+                must be a sequence of length 2'
+            assert isinstance(data_domain[i][0], int) or\
+                isinstance(data_domain[i][0],float),'dimension {}'.format(i)+' bounds\
+                must be numerical value'
+            assert data_domain[i][0] < data_domain[i][1],'dimension {}'.format(i)+' bounds\
+               must be ordered, that is the element 0 must be smaller them the\
+               1'
+
+        for domain_bound in data_domain:
+            self.max.append( domain_bound[1] )
+            self.min.append( domain_bound[0] )
+
+    def configure(self, data_domain):
         '''
          Configure the slicing based on the mode and the dimension supreme and
         infimum. In practice it returns a list of tuples, to attribute slices, each with the lower
@@ -21,30 +43,25 @@ class DataDomainSlicer(object):
 
         abstract method to be implemented
         '''
-        self.slices = [] 
+        self.slices = []
+        self.max = []
+        self.min = []
         self._n = 0
-
-    def set_max(self, setmax):
-        if setmax > self.min:
-            self.max = setmax
-
-    def set_min(self, setmin):
-        if setmin < self.max:
-            self.min = setmin
+        self.assert_domain(data_domain)
 
     def set_number_of_steps(self, steps_num):
         self.number_of_steps = steps_num
 
-    def reset_domain(self, setmin, setmax):
-        self.max = 100000000000
-        self.min = -1
-        self.set_min(setmin)
-        self.set_max(setmax)
+    def reset_domain(self, data_domain):
+        self.assert_domain(data_domain)
 
-    def reset(self, setmin, setmax, steps_num):
-        self.reset_domain(setmin, setmax)
+    def reset(self, data_domain, steps_num):
+        '''
+          Take new data_domain number of steps(frames) and output reconfigure
+         the slicer.
+        '''
         self.set_number_of_steps(steps_num)
-        self.configure()
+        self.configure(data_domain)
 
     def get_slice(self):
         '''
@@ -75,33 +92,44 @@ class LadderSlicer(DataDomainSlicer):
      step_size and the given number of  steps
     '''
 
-    def  __init__(self, setmax, setmin, number_of_steps):
-        super(LadderSlicer, self).__init__(setmax, setmin, number_of_steps)
-        self.configure()
+    def  __init__(self, data_domain, number_of_steps):
+        super(LadderSlicer, self).__init__(data_domain, number_of_steps)
+        self.configure(data_domain)
 
-    def configure(self):
+    def configure(self, data_domain):
         '''
          Configure the slicing based on the mode and the dimension supreme and
         infimum. In practice it returns a list of tuples, to attribute slices, each with the lower
         and the upper bound of the slice.
         ''' 
-        super( LadderSlicer, self).configure()
-        self.step_size = int(2*(self.max - self.min)/(self.number_of_steps+1))
+        super( LadderSlicer, self).configure(data_domain)
+        self.step_size = []
+        dim_size = len(self.max)
 
-        while self.step_size == 0:
-            warnings.warn('Warning: step_size calculated is 0, will try to reduce the number of steps to get bigger domain size')
-            self.number_of_steps -= 1
-            self.step_size = int(2*(self.max - self.min)/self.number_of_steps)
-            if self.number_of_steps <= 2:
-                warnings.warn("Warning: cant find an adequate step size with \
-                        number of steps bigger than 2, setting the both to 2,\
-                        maybe is better to re-initialize with bigger domain \
-                        size")
-                self.step_size = 2
-                break
+        for i in range(dim_size):
+            self.step_size.append(int(2*(self.max[i] -\
+                                         self.min[i])/(self.number_of_steps+1)))
+            while self.step_size[-1] == 0:
+
+                warnings.warn('Warning: step_size {} calculated is 0, setting up\
+                              to 2, consider a reduction in the number of\
+                              steps'.format(i))
+                self.number_of_steps -= 1
+                self.step_size[-1] =(int(2*(self.max[i] -\
+                                         self.min[i])/(self.number_of_steps)))
+                for j in range(i+1):
+                    self.step_size[j] =(int(2*(self.max[j] -\
+                                             self.min[j])/(self.number_of_steps))) 
+
+                if self.number_of_steps == 2:
+                    break
+
         for i in range(self.number_of_steps):
-            self.slices.append( ( self.min+i*int(self.step_size/2),
-                self.min + i*int(self.step_size/2) + self.step_size) )
+            frames = []
+            for j in range(dim_size):
+                frames.append( [self.min[j]+i*int(self.step_size[j]/2),
+                    self.min[j] + i*int(self.step_size[j]/2) + self.step_size[j]] )
+            self.slices.append(frames)
 
 class EmbeddedSlicer(DataDomainSlicer):
     '''
@@ -116,15 +144,15 @@ class EmbeddedSlicer(DataDomainSlicer):
         --recursive_generator: only if recursive is true, choose between Fater
         and Mater scheme to recursevely slice the embedded domains. Defaults to
         Fater.
-        --recursive_depth: number of time slicer will try to generate
+            --recursive_depth: number of time slicer will try to generate
         sub-intervals from bigger intervals given from above, starting by the
         Fater Slice, the intervals will be generated acording to
         recursive_generator choosen. Defaults to 2.
 
     '''
-    def __init__(self, setmax, setmin, number_of_steps, mater_slicer, fater_slicer,
+    def __init__(self, data_domain, number_of_steps, mater_slicer, fater_slicer,
             recursive=True, recursive_generator='Fater', recursive_depth=2):
-        super(EmbeddedSlicer, self).__init__(setmax, setmin, number_of_steps)
+        super(EmbeddedSlicer, self).__init__(data_domain, number_of_steps)
         #check slicer objects
         if isinstance(fater_slicer,DataDomainSlicer) and isinstance(mater_slicer,DataDomainSlicer):
             self.mater = mater_slicer
@@ -140,18 +168,18 @@ class EmbeddedSlicer(DataDomainSlicer):
                 message = message+' and '+mater_slicer.__class__
             raise NotDomainSliceError(message)
 
-        self.configure()
+        self.configure(data_domain)
 
-    def configure(self):
-        super( EmbeddedSlicer, self).configure()
+    def configure(self, data_domain):
+        super( EmbeddedSlicer, self).configure(data_domain)
         mater_slices = [i for i in self.mater]
         fater_slices = []
         if self.recursive:
             for deep in range(self.depth):
                 for i in mater_slices:
                     self.slices.append(i)
-                    self.fater.reset_domain(i[0],i[1])
-                    self.fater.configure()
+                    self.fater.reset_domain(i)
+                    self.fater.configure(i)
                     fater_slices.extend([j for j in self.fater])
                     self.slices.extend(fater_slices)
                 mater_slices = fater_slices
@@ -160,8 +188,8 @@ class EmbeddedSlicer(DataDomainSlicer):
 
             for i in mater_slices:
                 self.slices.append(i)
-                self.fater.reset_domain(i[0],i[1])
-                self.fater.configure()
+                self.fater.reset_domain(i)
+                self.fater.configure(i)
                 fater_slices.extend([j for j in self.fater])
                 self.slices.extend(fater_slices)
 
