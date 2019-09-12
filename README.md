@@ -37,7 +37,7 @@ Nowadays requires python 2.7
 git clone https://github.com/Uiuran/stattus4-audio-models.git
 cd ~/path/to/dir/stattus4-audio-models/
 conda create --name audio python=2.7
-conda activate env
+conda activate audio
 pip install .
 ``` 
 
