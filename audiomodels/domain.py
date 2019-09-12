@@ -154,18 +154,18 @@ class EmbeddedSlicer(DataDomainSlicer):
             recursive=True, recursive_generator='Fater', recursive_depth=2):
         super(EmbeddedSlicer, self).__init__(data_domain, number_of_steps)
         #check slicer objects
-        if isinstance(fater_slicer,DataDomainSlicer) and isinstance(mater_slicer,DataDomainSlicer):
-            self.mater = mater_slicer
-            self.fater = fater_slicer
+        if issubclass(fater_slicer,DataDomainSlicer) and issubclass(mater_slicer,DataDomainSlicer):
+            self.mater = mater_slicer(data_domain, number_of_steps)
+            self.fater = fater_slicer(data_domain, number_of_steps)
             if recursive:
                 self.generator = recursive_generator
                 self.depth = recursive_depth
                 self.recursive = recursive
         else:
-            if not isinstance(fater_slicer,DataDomainSlicer):
-                message = fater_slicer.__class__
-            if not isinstance(mater_slicer,DataDomainSlicer):
-                message = message+' and '+mater_slicer.__class__
+            if not issubclass(fater_slicer,DataDomainSlicer):
+                message = fater_slicer.__name__
+            if not issubclass(mater_slicer,DataDomainSlicer):
+                message = message+' and '+mater_slicer.__name__
             raise NotDomainSliceError(message)
 
         self.configure(data_domain)
