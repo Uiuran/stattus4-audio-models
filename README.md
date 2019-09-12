@@ -7,12 +7,12 @@ Note: this is a Alpha Version.
 ## Audio Deep Learning
 
 Deep Neural Networks for Tagging Audio based on binary tagged database using Audio Features Models.
-This Neural Network is being implemented altogether with Neural Network API, Keras like, but focused on Input Signal Framing and Sematization and Input Based Neural Architecture Search. The two projects will hold it's own repository in the future.
+This Neural Network is being implemented altogether with Neural Network API, Keras like, but focused on Input Signal Framing and Semantization and Input Based Neural Architecture Search. The two projects will hold it's own repository in the future.
 
 0. Milestones
   * 02/09/2019
     * Classifier for any input image size (i.e. flattening last Features from Hidden Layers). **Done**
-    * Model for diverse FRAME size as Input. Done
+    * Model for diverse FRAME size as Input. **Done**
     * Model for Hyperparam Tuning (parent class for hyperparameter search of any specific architecure). **Done**
     
   * 12/09/2019    
