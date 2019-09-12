@@ -45,10 +45,6 @@ Bitbucket repository to be synchronized ...
 import audiomodels.model as audio
 ``` 
 
-## MUST TODO
-
-Clean up repository from building files.
-
 ## Possible TODOs 
 
 These were developments predicted but dumped for Neural Network development.
