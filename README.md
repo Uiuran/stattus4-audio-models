@@ -31,10 +31,13 @@ This Neural Network is being implemented altogether with Neural Network API, Ker
 
 ## Installation
 
+Nowadays requires python 2.7
+
 ```bash
 git clone https://github.com/Uiuran/stattus4-audio-models.git
 cd ~/path/to/dir/stattus4-audio-models/
-conda activate env
+conda create --name audio python=2.7
+conda activate audio
 pip install .
 ``` 
 
@@ -44,6 +47,10 @@ Bitbucket repository to be synchronized ...
 ```python
 import audiomodels.model as audio
 ``` 
+
+## Must TODO
+
+* Port to python 3
 
 ## Possible TODOs 
 
