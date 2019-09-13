@@ -18,20 +18,20 @@ setup(
     # version='0.1.dev0',
     # according to https://semver.org/
     version='0.2.dev3',
-    
+
     description=' audio models package with semantic features identification',
     long_description=long_description,
     long_description_content_type="text/markdown",
 
     # The project's main homepage.
-    url='https://bitbucket.org/dpenalva/stattus4-audio-models/src/master/',
+    url='http://github.com/Uiuran/stattus4-audio-models',
 
     # Author details
     author='Daniel Penalva',
     author_email='dkajah@gmail.com',
 
     # Choose your license
-    license='',
+    license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -69,16 +69,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords=['physics', 'music', 'synthesis', 'psychophysics',
-            'symmetry', 'change ringing', 'campanology', 'group theory', 'toolbox',
-            'musical composition', 'art', 'artistic creation',
-            'experimental music', 'contemporary music', 'synthesizer', 'PCM', 'audio', 'sound',
-            'acoustics', 'signal processing', 'multimedia', 'psychoactive',
-            'rotation', 'permutation', 'mirror', 'speech', 'singing',
-            'speech synthesis', 'numpy', 'sonic art', 'hifi', 'hi-fi',
-            'noise', 'high fidelity', 'hyper-fidelity', 'LUT', 'vibrato',
-            'tremolo', 'AM', 'FM', 'ADSR', 'HRTF', 'spatialization',
-            'spatial location'],
+    keywords=['physics', 'music','audio','neuralnetworks'],
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -92,7 +83,8 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     # TODO: test with virtualenv to know the dependencies
 
-    install_requires=['numpy', 'scipy', 'matplotlib','pandas','librosa','tensorflow','pillow'],
+    install_requires=['numpy', 'scipy',
+                      'matplotlib','pandas','librosa','tensorflow','pillow'],
 
     # List additional groups of dependencies here (e.g. development dependencies).
     # You can install these using the following syntax, for example:
@@ -127,6 +119,6 @@ setup(
                  'Documentation': 'https://packaging.python.org/tutorials/distributing-packages/',
                  #'Funding': 'https://donate.pypi.org',
                  #'Say Thanks!': 'http://saythanks.io/to/example',
-                 'Source': 'https://bitbucket.org/dpenalva/stattus4-audio-models/src/master/',
+                 'Source': 'https://github.com/Uiuran/stattus4-audio-models',
                  'Tracker': 'https://github.com/pypa/sampleproject/issues',}
 )

@@ -37,6 +37,17 @@ class AttrDict(dict):
   __getattr__ = dict.__getitem__
   __setattr__ = dict.__setitem__
 
+class Model:
+    '''
+      Model Class uses Builder class to build each architecture block of the
+     network and build the final model that will be trained.
+    '''
+    def __init__(self, **kwargs):
+        #self.slicer = vv_vv
+        #self.dataloader = oOoOoO
+        #self.hyperparameters = P_b_P
+        pass
+
 class Builder:
 
     def __init__(self, **kwargs):

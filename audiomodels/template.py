@@ -26,10 +26,19 @@ class NotEnoughDataError(Exception):
     def __str__(self):
         return self.message+' in the last batch with cv '+str(self.data_cv)+' samples, sv '+str(self.data_sv)+' samples and '+str(self.batch)+' batches.'
 
-class NotDomainSliceError(Exception):
+class NotDomainSlicerError(Exception):
 
     def __init__(self, message):
         self.message = message
 
     def __str__(self):
-        return self.message+' is not a object with DomainSlice object as parent'
+        return self.message+' is not a object with DomainSlicer object as parent'
+
+class WrongSlicerError(Exception):
+
+    def __init__(self, slicer,message):
+        self.slicer_name = slicer.__name__
+        self.message = message
+
+    def __str__(self):
+        return self.slicer_name+' cannot be used as slicer '+self.message
