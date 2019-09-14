@@ -6,7 +6,8 @@ from tensorflow.core.framework import node_def_pb2
 
 #Device, filter dimension calculator, arch block helpers
 
-_conv_dim = lambda x,xx,dilation,stride : np.ceil((x-(xx-1)*dilation)/stride)
+def _conv_dim(orig,filt,dilation=1,stride=1):
+    return np.ceil((orig-(filt-1)*dilation)/stride)
 
 _ff = lambda ord,loss : 10.0*ord if loss//ord < 1.0/ord else ord
 _fff = lambda ord,loss : ord/10.0 if loss//ord > 1.0/(ord/10.0) else ord
@@ -83,24 +84,34 @@ def get_op_fromscope(graph,scope='signal_in/',opname = 'init', **kwargs):
     else:
       raise NameError('Operation not found')
 
-def calculatefilter(initialdim, filterlist, dim=0):
+def calculatefilter(initialdim, filterlist):
 
-  a = initialdim  
-  b = 0 
-  c = 0
-  for filter in filterlist:
-    if hasattr(filter,'__iter__'):
-      fir = filter[dim]
-    else:
-      fir = filter
-    a = _conv_dim(a,fir,1,1)
-    if a < 0:
-      b = a
-      c = 1
-      break
-  if c == 1:
-    a = b
-  return np.int32(a)
+  if hasattr(initialdim,'__iter__'):
+    size = len(initialdim)
+    a = initialdim
+  else:
+    size = 1
+    a = [initialdim]
+
+
+  b = [0]*size
+  c = [0]*size
+  ant = 0
+  stop = [0]*size
+
+  for i in range(size):
+    for fir in range(len(filterlist)):
+      ant = a[i]
+      a[i] = _conv_dim(a[i],filterlist[fir][i],1,1)
+
+      if a[i] <= 0:
+        b[i] = ant
+        c[i] = 1
+        stop[i] = fir
+        break
+    if c[i] == 1:
+      a[i] = np.int32(b[i])
+  return a,stop
 
 def get_tensor_list_from_scopes(graph, tensor_scope_name):
     

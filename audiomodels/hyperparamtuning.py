@@ -350,9 +350,8 @@ class GCNNMaxPooling(Hyperparameter):
             self.search(frame, algorithm)
 
     def _degradation_metrics(self, frame, config, mode):
-
+        
         for i in range(self.slicer.dim):
-
             b = frame[i][1]-frame[i][0]
             a=b
             c = 0
