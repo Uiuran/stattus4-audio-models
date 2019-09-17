@@ -350,10 +350,13 @@ class Builder:
             if len(self.deepness) == 0:
                 self.deepness = None
 
-    def adaptative_learning_rate(self,step,K): 
+    def adaptative_learning_rate(self,step,K):
 
+        _ff = lambda ord,loss : 10.0*ord if loss//ord < 1.0/ord else ord
+        _f = lambda ord,loss : ord/10.0 if loss//ord > 1.0/(ord/10.0) else ord
+        f = lambda ord,loss: _f(ord,loss) if _ff(ord,loss) == ord else _ff(ord,loss)
         ord = np.mean( np.abs( np.diff( self.lossval[step-K:step] ) ) )
-        ord = ffff(ord, self.lossval[step])
+        ord = f(ord, self.lossval[step])
 
         lr = ( ( ( np.log2(step*0.01+2.0)*self.lr)**(1./(np.log2(step*0.1+1.0)+1.0)))/( ( self.lossval[step]//(self.lossval[step]*0.05) )*(1.0 + step*(ord//(0.002) ) ) ) )%0.001
         return (lr + (lr // 0.0000005) )% 0.0003 + 0.0000005

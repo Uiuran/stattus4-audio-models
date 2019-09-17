@@ -100,12 +100,14 @@ class DataDomainSlicer(object):
 
         if self.frame_selection == 'fraction':
             number_of_frames = int(self.frame_fraction*len(self.slices))
+
             size_list = lambda x: [self.frame_size(el) for el in x]
             slice_sizes = size_list(self.slices)
             ordered_sizes_index = np.argsort(slice_sizes)
             select = []
             for i in range(number_of_frames):
                 select.append(self.slices[ordered_sizes_index[len(slice_sizes)-i-1]])
+
             self.slices = select
 
 
@@ -258,4 +260,4 @@ class NoSliceSlicer(DataDomainSlicer):
 
     def configure(self,data_domain):
         super(NoSliceSlicer, self).configure(data_domain)
-        self.slices = data_domain
+        self.slices = [data_domain]
