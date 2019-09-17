@@ -17,11 +17,16 @@ This Neural Network is being implemented altogether with Neural Network API, Ker
     
   * 12/09/2019    
     * Hyperparameter para GCNN + MaxPooling de acordo com o tamanho do FRAME de entrada. **Done**
+    * Corrected Bugs from previous commit, pyramidal Hyperparameter automatic has a beta (17/09/2019) **Done**
     * Builder for final model. **Doing**
     
   * What is Next ?
     * Cross-Validation with Spectrogram Data, ~ 400x600, of the order of ~ 100000 units.
     * Calculus of accuracy and fn parameters.
+    
+  * Future 
+    * Implementation of Bi-LSTM(RNN) module.
+    * Implementation of another Neural Architecture Search Algorithms.
     
   * Previous Milestones
   
