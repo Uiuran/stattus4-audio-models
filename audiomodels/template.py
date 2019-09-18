@@ -26,6 +26,7 @@ class NotEnoughDataError(Exception):
     def __str__(self):
         return self.message+' in the last batch with cv '+str(self.data_cv)+' samples, sv '+str(self.data_sv)+' samples and '+str(self.batch)+' batches.'
 
+
 class NotDomainSlicerError(Exception):
 
     def __init__(self, message):
@@ -42,3 +43,11 @@ class WrongSlicerError(Exception):
 
     def __str__(self):
         return self.slicer_name+' cannot be used as slicer '+self.message
+
+class BatchLimitException(Exception):
+
+    def __init__(self, message):
+        self.message
+
+    def __str__(self):
+        return self.message

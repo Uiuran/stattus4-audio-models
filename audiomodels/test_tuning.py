@@ -1,27 +1,28 @@
 from hyperparamtuning import *
 import pdb
 
-hptuning = GCNNMaxPooling(((0,40),(0,40)), slicer= EmbeddedSlicer,
+hptuning = GCNNMaxPooling(((0,400),(0,600)), slicer= EmbeddedSlicer,
                           fater_slicer = LadderSlicer, mater_slicer = LadderSlicer,
                           number_of_steps=10, frame_selection='fraction',
-                          frame_fraction=0.10, recursive_depth = 1)
+                          frame_fraction=0.50, recursive_depth = 2)
 
-
+print(len(hptuning.slicer.slices))
 for i in range(len(hptuning.slicer.slices)):
     hptuning.update_architecture()
 print('EmbeddedSlicer GCNN Max Pooling')
 print(hptuning.deep_arch)
 
-hptuning = GCNNMaxPooling(((0,40),(0,40)), slicer= LadderSlicer,
+hptuning = GCNNMaxPooling(((0,400),(0,600)), slicer= LadderSlicer,
                           number_of_steps=10, frame_selection='fraction',
-                          frame_fraction=0.8)
+                          frame_fraction=0.5)
 
+print(len(hptuning.slicer.slices))
 for i in range(len(hptuning.slicer.slices)):
     hptuning.update_architecture()
 print('LadderSlicer GCNN Max Pooling')
 print(hptuning.deep_arch)
 
-hptuning = GCNNMaxPooling(((0,40),(0,40)), slicer= NoSliceSlicer,
+hptuning = GCNNMaxPooling(((0,400),(0,600)), slicer= NoSliceSlicer,
                           number_of_steps=10, frame_selection='fraction',
                           frame_fraction=1.)
 
@@ -30,5 +31,5 @@ for i in range(len(hptuning.slicer.slices)):
 print('NoSliceSlicer GCNN Max Pooling')
 print(hptuning.deep_arch)
 print('Final degradation')
-hptuning.eval_metrics(((0,40),(0,40)),hptuning.deep_arch[((0,40),(0,40))],'all')
+hptuning.eval_metrics(((0,400),(0,600)),hptuning.deep_arch[((0,400),(0,600))],'all')
 print(hptuning.degrad)

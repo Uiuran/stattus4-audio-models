@@ -26,6 +26,7 @@ import sys
 import copy
 import re
 import os
+import json
 
 # SHORT NAMES
 tf.summary.initialize = tf.contrib.summary.initialize
@@ -42,11 +43,105 @@ class Model:
       Model Class uses Builder class to build each architecture block of the
      network and build the final model that will be trained.
     '''
-    def __init__(self, **kwargs):
-        #self.slicer = vv_vv
-        #self.dataloader = oOoOoO
-        #self.hyperparameters = P_b_P
-        pass
+    def __init__(
+        self,
+        data=None,
+        framing=None,
+        arch_search=None,
+        config=None,
+        verbose=None):
+
+        if config is not None:
+            if isinstance(config,str):
+                if config.find('.json') is not -1:
+                    self.config=config
+                    self.configure(config)
+                else:
+                    raise ValueError("config keyword arg must be a string containing the full pathname to a .json file with the appropriate argments.")
+            else:
+                raise ValueError("config keyword arg must be a string containing the full pathname to a .json file with the appropriate argments.")
+        else:
+            if data is not None:
+                if isinstance(data, BaseDataSampler):
+                    self.data=data
+                else:
+                    raise ValueError("data must be a BaseDataSampler object")
+            if framing is not None:
+                if isinstance(framing, DataDomainSlicer):
+                    self.framing=framing
+                else:
+                    raise ValueError("framing must be a DataDomainSlicer object")
+            if arch_search is not None:
+                if isinstance(arch_search, Hyperparameter):
+                    self.arch_search=arch_search
+                else:
+                    raise ValueError("arch_search must be a Hyperparameter object")
+
+        if verbose:
+            self.verbose=verbose
+
+    def configure(self, configuration):
+
+        with open(configuration,'r') as fp:
+            config = json.load(fp)
+
+        #TODO CONFIG DATA ARGMENT
+
+        if config.has_key('framing'):
+            slicer=configuration['framing']
+            if slicer.has_key('data_domain'):
+                self.data_domain=tuple([tuple(a) for a in slicer['data_domain']])
+            else:
+                raise KeyError('.json does not have data_domain list object')
+            if slicer.has_key('number_of_steps'):
+                self.number_of_steps=slicer['number_of_steps']
+            else:
+                self.number_of_steps=10
+            if slicer.has_key('frame_selection'):
+                self.frame_selection=slicer['frame_selection']
+            else:
+                self.frame_selection='fraction'
+            if slicer.has_key('frame_fraction'):
+                self.frame_fraction=slicer['frame_fraction']
+            else:
+                self.frame_fraction=0.15
+            if slicer.has_key('name'):
+                if slicer['name'] == 'EmbeddedSlicer':
+                    if slicer.has_key('fater_slicer'):
+                        self.fater_slicer = slicer['fater_slicer']
+                    else:
+                        self.fater_slicer = LadderSlicer
+                    if slicer.has_key('mater_slicer'):
+                        self.mater_slicer = slicer['mater_slicer']
+                    else:
+                        self.mater_slicer = LadderSlicer
+                    if slicer.has_key('recursive'):
+                        self.recursive = slicer['recursive']
+                    else:
+                        self.recursive = True
+                    if slicer.has_key('recursive_depth'):
+                        self.recursive_depth = slicer['recursive_depth']
+                    else:
+                        self.recursive_depth = 2
+                    if slicer.has_key('recursive_generator'):
+                        self.recursive_generator = slicer['recursive_generator']
+                    else:
+                        self.recursive_generator = "Fater"
+                    self.slicer = EmbeddedSlicer
+                if slicer['name'] == 'LadderSlicer':
+                    self.slicer = LadderSlicer
+                if slicer['name'] == 'NoSliceSlicer':
+                    self.slicer = NoSliceSlicer
+        if config.has_key('arch_search'):
+            self.arch_search=config['arch_search']
+        else:
+            self.arch_search=GCNNMaxPooling
+
+
+    def feed_batch(self):
+        '''
+         Feed a batch to the model according to the configured data-loader.
+        '''
 
 class Builder:
 

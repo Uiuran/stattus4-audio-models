@@ -184,8 +184,9 @@ class EmbeddedSlicer(DataDomainSlicer):
         recursive_generator choosen. Defaults to 2.
 
     '''
-    def __init__(self, data_domain, number_of_steps, mater_slicer,
-                 fater_slicer, frame_selection='fraction', frame_fraction=0.6,
+    def __init__(self, data_domain, number_of_steps,
+                 mater_slicer, fater_slicer,
+                 frame_selection='fraction', frame_fraction=0.6,
                  recursive=True, recursive_generator='Fater', recursive_depth=2):
         super(EmbeddedSlicer, self).__init__(data_domain, number_of_steps,
                                              frame_selection=frame_selection,
