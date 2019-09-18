@@ -56,6 +56,7 @@ import audiomodels.model as audio
 ## Must TODO
 
 * Port to python 3
+* Refatorate changing names.
 
 ## Possible TODOs 
 
