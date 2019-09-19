@@ -63,16 +63,16 @@ def subbed_timeseries(measure,fs):
 
   return a,fsa
 
-def subbed_spect(measure,fs,plot=True):
+def subbed_spect(measure, fs, plot=True, downsample=False):
   '''
    Return Sxx (log squared amplitude of stft spectra), f (frequencies), t (time steps)
   '''
-  sampa = np.min(np.array(amostragem(np.array(measure),fs, plot=plot))[:,1])  
-  fsa = (fs/int(sampa))
-    
-  a = downsampling(np.array(measure),sampa )
-  f,t,Sxx = signal.spectrogram(a,fsa,nfft=fsa/4,nperseg=fsa/5,noverlap=fsa/10,scaling='spectrum',mode='magnitude')
-  #Cut zero variance part of spectra(useless recording)   
+  if downsample:
+      sampa = np.min(np.array(amostragem(np.array(measure),fs, plot=plot))[:,1])
+      fs = (fs/int(sampa))
+      measure = downsampling(np.array(measure), fs)
+  f,t,Sxx = signal.spectrogram(measure, fs, nfft=fs/4, nperseg=fs/5, noverlap=fs/10, scaling='spectrum', mode='magnitude')
+  #Cut zero variance part of spectra(useless recording) 
   #Sxx = Sxx[:,np.var(np.log(Sxx+1e-13),axis=0) > 0.5]
   #l = len(Sxx[0,:])
   #t = t[:l] 
@@ -85,4 +85,3 @@ def subbed_spect(measure,fs,plot=True):
     plt.show()
     
   return np.abs(np.log(Sxx+1e-13)),f,t
-

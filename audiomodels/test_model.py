@@ -2,10 +2,16 @@ from model import *
 
 model = Model(
             data=Stattus4AudioSpectrumSampler,
-            framing=EmbeddedSliceSlicer,
-            arch_search=GCNNMaxpooling,
+            framing=EmbeddedSlicer,
+            arch_search=GCNNMaxPooling,
             config='test_model.json',
             verbose=True)
+
+def test_configure():
+    model.info()
+
+def test_compile():
+    model.print_names()
 
 def test_one_batch():
     model.feed_batch(source='model')
@@ -18,6 +24,3 @@ def test_batch_pool():
     model.run()
     model.run_all(ckpt='~/stattus4/model_test_ckpt/', strategy='accuracy')
     model.test()
-
-#test_one_batch()
-test_batch_pool()

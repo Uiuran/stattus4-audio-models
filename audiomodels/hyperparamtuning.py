@@ -1,4 +1,5 @@
 from  model import *
+from util import *
 import warnings
 import copy
 #GRAPH BUILDER AND RUNNER CLASS

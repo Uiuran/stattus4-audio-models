@@ -94,7 +94,7 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
                 else:
 
                     data,fs = librosa.load(self.data_dir+self.nomes[i],sr=None)
-                    spec = subbed_spect(data,fs,plot=False)
+                    spec = subbed_spect(data, fs, plot=True, downsample=False)
                     m = np.shape(spec[0])
 
                     if m[0] >= self.freq_size and m[1] >= self.time_size:

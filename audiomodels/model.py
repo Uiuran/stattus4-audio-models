@@ -1,7 +1,5 @@
 # encoding : utf-8
 
-# IMPORTS
-from IPython.display import Math
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
 from tensorflow.python import util
@@ -15,28 +13,11 @@ from dataloader import *
 from ckpt_hookers import *
 from domain import *
 from hyperparamtuning import  *
-
-import numpy as np
-import matplotlib.pyplot as plt
-from six import string_types
-import argparse
-import functools
-from numpy import asarray, array, ravel, repeat, prod, mean, where, ones
-import sys
-import copy
-import re
-import os
-import json
+from util import *
 
 # SHORT NAMES
 tf.summary.initialize = tf.contrib.summary.initialize
 tf.variable_scope = tf.compat.v1.variable_scope
-
-# CONVENIENCE DATA STRUCTS
-class AttrDict(dict):
-
-  __getattr__ = dict.__getitem__
-  __setattr__ = dict.__setitem__
 
 class Model:
     '''
@@ -52,47 +33,94 @@ class Model:
         verbose=None):
 
         if config is not None:
-            if isinstance(config,str):
-                if config.find('.json') is not -1:
-                    self.config=config
-                    self.configure(config)
-                else:
-                    raise ValueError("config keyword arg must be a string containing the full pathname to a .json file with the appropriate argments.")
+            self.config=None
+            self._set_with_assert('config', config, str)
+            if self.config.find('.json') is not -1:
+                self.config=config
+                self.configure()
             else:
-                raise ValueError("config keyword arg must be a string containing the full pathname to a .json file with the appropriate argments.")
+                raise('config keyword arg must be a string with full path to a valid .json file')
         else:
             if data is not None:
-                if isinstance(data, BaseDataSampler):
-                    self.data=data
-                else:
-                    raise ValueError("data must be a BaseDataSampler object")
+                self.data=None
+                self._set_with_assert('data', data, BaseDataSampler)
             if framing is not None:
-                if isinstance(framing, DataDomainSlicer):
-                    self.framing=framing
-                else:
-                    raise ValueError("framing must be a DataDomainSlicer object")
+                self.framing=None
+                self._set_with_assert('framing', framing, DataDomainSlicer)
             if arch_search is not None:
-                if isinstance(arch_search, Hyperparameter):
-                    self.arch_search=arch_search
-                else:
-                    raise ValueError("arch_search must be a Hyperparameter object")
-
+                self.arch_search=None
+                self._set_with_assert('arch_search', arch_search, Hyperparameter)
         if verbose:
             self.verbose=verbose
 
-    def configure(self, configuration):
+    def _set_with_assert(self,holder, argment, classtype):
+        '''
+         Helper function to assert argments
+        '''
+        if issubclass(argment.__class__, classtype):
+            # instance assertion
+            if hasattr(self, holder):
+                self.__dict__[holder]=argment
+        elif issubclass(argment.__class__,type):
+                    # class assertion
+                    if issubclass(argment, classtype):
+                        if hasattr(self, holder):
+                            self.__dict__[holder]=argment
+                    else:
+                        raise ValueError(str(argment.__class__.__name__)+" must be a "+classtype.__name__+" class to be configured")
+        else:
+            raise ValueError(str(argment.__class__.__name__)+" must be a "+classtype.__name__+" instance to be configured")
 
-        with open(configuration,'r') as fp:
-            config = json.load(fp)
+    @staticmethod
+    def _assert_instance(argment, classtype):
+        if issubclass(argment.__class__, classtype):
+            # instance assertion
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def _assert_class(argment, classtype):
+
+        if issubclass(argment.__class__,type):
+                    # class assertion
+                    if issubclass(argment, classtype):
+                        return True
+                    else:
+                        return False
+        else:
+            return False
+
+    def print_names():
+        '''
+        printar buider.namescopes
+        '''
+        pass
+
+    def configure(self):
+
+
+        try:
+            with open(self.config,'r') as fp:
+                config = json.load(fp)
+        except:
+            raise ValueError('invalid pathname to json file')
 
         #TODO CONFIG DATA ARGMENT
 
         if config.has_key('framing'):
-            slicer=configuration['framing']
+            slicer=config['framing']
             if slicer.has_key('data_domain'):
-                self.data_domain=tuple([tuple(a) for a in slicer['data_domain']])
+                if issubclass(slicer['data_domain'].__class__,list) :
+                    if issubclass(slicer['data_domain'][0].__class__,list):
+                        self.data_domain=tuple([tuple(a) for a in slicer['data_domain']])
+                    else:
+                        raise Exception()
+                else:
+                    raise Exception()
             else:
                 raise KeyError('.json does not have data_domain list object')
+
             if slicer.has_key('number_of_steps'):
                 self.number_of_steps=slicer['number_of_steps']
             else:
@@ -137,11 +165,20 @@ class Model:
         else:
             self.arch_search=GCNNMaxPooling
 
+    def info(self):
+        print(self.__dict__)
 
     def feed_batch(self):
         '''
          Feed a batch to the model according to the configured data-loader.
         '''
+        pass
+
+    def compile(self):
+        '''
+        Put
+        '''
+        pass
 
 class Builder:
 
@@ -212,7 +249,7 @@ class Builder:
             self.num_input = 1
 
         self.graph = tf.Graph()
-        self.signal_in = []
+        self.signal_in = ExtendList([])
         self.arch_blocks = {}
 
     def __call__(self, **kwargs):
@@ -656,7 +693,7 @@ class Signal:
 
         with graph.as_default():
             with tf.name_scope('signal'):
-                self.data_feed = tf.placeholder(dtype, shape=(data_shape[0], data_shape[1], data_shape[2], data_shape[3]), name='data_feed')      
+                self.data_feed = tf.placeholder(dtype, shape=(data_shape[0], data_shape[1], data_shape[2], data_shape[3]), name='data_feed')
 
     def feed_signal_in():
         pass
