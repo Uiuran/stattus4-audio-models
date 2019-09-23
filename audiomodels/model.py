@@ -1,4 +1,4 @@
-# encoding : utf-8
+# -*- coding: utf-8 -*-
 
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
@@ -19,39 +19,67 @@ from util import *
 tf.summary.initialize = tf.contrib.summary.initialize
 tf.variable_scope = tf.compat.v1.variable_scope
 
+# TODO- json file is sourcing the argments to the objects,
+# in the case of given config file. Possibly do the option to build kwargs
+# with objects of data/framing and arch_search from inside the model, without
+# .json file.
 class Model:
     '''
       Model Class uses Builder class to build each architecture block of the
      network and build the final model that will be trained.
+
+     Argments
+
+        -data: BaseDataSampler instance with the data_path and other argments
+        relevant to data reading, see BaseDataSampler and its heritance tree
+        doc-string.
+
+        -arch_search: Hyperparameter instance, holds the slicer object and the
+        tuning algorithm, see the docstring for its argments.
+
+        -config: string with path to .json file that configures all relevant
+        argments. If it is given, it will have priority to build the model over
+        the given data and arch_search.
+
+    Kwargs:
+
+        Optionally configure objects data and arch_search given not as a
+        instance but as string selector.
+
+        **Not implemented, design decision for the future**
+
     '''
     def __init__(
         self,
         data=None,
-        framing=None,
         arch_search=None,
         config=None,
-        verbose=None):
+        verbose=None,
+        **kwargs
+    ):
 
+        # Give preference to config kwarg that gives everything in a json file
         if config is not None:
             self.config=None
             self._set_with_assert('config', config, str)
+            # assert it is json config file
             if self.config.find('.json') is not -1:
-                self.config=config
+                self.read_from_json()
                 self.configure()
             else:
                 raise('config keyword arg must be a string with full path to a valid .json file')
         else:
-            if data is not None:
-                self.data=None
-                self._set_with_assert('data', data, BaseDataSampler)
-            if framing is not None:
-                self.framing=None
-                self._set_with_assert('framing', framing, DataDomainSlicer)
-            if arch_search is not None:
-                self.arch_search=None
-                self._set_with_assert('arch_search', arch_search, Hyperparameter)
+            if self._assert_instance(data, BaseDataSampler):
+                self.data=data
+            else:
+                raise ValueError("data must be an instance of BaseDataSampler.")
+            if self._assert_instance( arch_search, Hyperparameter):
+                self.arch_search=arch_search
+            else:
+                raise ValueError("arch_search must be a instance of Hyperparameter")
+
         if verbose:
-            self.verbose=verbose
+            self.verbose=True
 
     def _set_with_assert(self,holder, argment, classtype):
         '''
@@ -63,11 +91,11 @@ class Model:
                 self.__dict__[holder]=argment
         elif issubclass(argment.__class__,type):
                     # class assertion
-                    if issubclass(argment, classtype):
-                        if hasattr(self, holder):
-                            self.__dict__[holder]=argment
-                    else:
-                        raise ValueError(str(argment.__class__.__name__)+" must be a "+classtype.__name__+" class to be configured")
+            if issubclass(argment, classtype):
+                if hasattr(self, holder):
+                    self.__dict__[holder]=argment
+                else:
+                    raise ValueError(str(argment.__class__.__name__)+" must be a "+classtype.__name__+" class to be configured")
         else:
             raise ValueError(str(argment.__class__.__name__)+" must be a "+classtype.__name__+" instance to be configured")
 
@@ -84,21 +112,99 @@ class Model:
 
         if issubclass(argment.__class__,type):
                     # class assertion
-                    if issubclass(argment, classtype):
-                        return True
-                    else:
-                        return False
+            if issubclass(argment, classtype):
+                return True
+            else:
+                return False
         else:
             return False
 
-    def print_names():
+    def print_namescopes(self, mode='std_out'):
         '''
         printar buider.namescopes
         '''
-        pass
+        if mode == 'std_out':
+            print(self.builder.namescopes.items())
 
-    def configure(self):
+    def configure(self,from_json=False):
 
+        if self.data_loader:
+            # Data Loader initializators
+            if issubclass(self.data_loader, Sass):
+                self.data_loader=self.data_loader(
+                    self.data_path,
+                    **self.data
+                )
+        if self.arch_search:
+            if issubclass(self.slicer,EmbeddedSlicer):
+                self.arch_search=self.arch_search(
+                    self.data_domain,
+                    **self.framing
+                )
+    def read_from_json(self):
+        '''
+         Configure model argments from .json file.
+         Json attributes are based in the three basic objects that builds the
+         model:
+
+             - data: contains the data loader.
+             - framing: contains the data domain structure slicer (frame
+             generator).
+             - arch_search: the hyperparameter searching algorithm, receive
+             argments from framing to build.
+
+        Each field returns a dictionary with its name to serve as argment in
+        instance building. For non keyword or default valued argment the
+        function returns an attribute with the name of the argment.
+
+        Fields Descriptions:
+
+        **data**
+
+            Returned as Attribute of the Model instance.
+
+            -data_path: string with full path to data repository.
+            -name: Name of the data loader.  Returned as data_loader to be instantiated.
+
+            Returned as keys of data dictionary of the Model instance
+
+            -num_samples: number of samples per training and testing batching.
+            -number_of_batches: number of batches per training and testing.
+            -split_tax: how many data to split for training and testing.
+
+        **framing**
+
+            Returned as Attribute of the Model instance. These attributes are
+            used as argment and parameters of Hyperparameter object.
+
+            -data_domain: list of lists containing the bounds of the
+            dimensions, transformed to tuple on purpose of hashing.
+            -number_of_steps: number of frames to be generated by the slicer.
+            -frame_selection: mode of selection of the generated frames,
+            default is 'fraction', optionally 'all'.
+            -frame_fraction: number between 0.0 and 1.0, the fraction of frames
+            to be selected in the case of the frame_selection be 'fraction'.
+            -name: name of the class to be instantied. Returned as slicer
+            attribute.
+
+            Returned as keys of framing dictionary of the Model Instance.
+
+            -fater_slicer: Slicer to be used by EmbeddedSlicer.
+            -mater_slicer: Slicer to be used by EmbeddedSlicer
+            -recursive: boolean, if true try to slices the frames to generate
+            new frames.
+            -recursive_depth: int, number of times that new frames are
+            generated according to the recursive_generator Slicer. Defaults to
+            2.
+            -recursive_generator: basis Slicer to recursively slice frames and
+            generate new frames. Defaults to 'Fater' to use fater_slicer.
+
+        **arch_search**
+
+            Returns arch_search as attribute to instantiate Hyperparameter
+            object from framing field.
+
+        '''
 
         try:
             with open(self.config,'r') as fp:
@@ -106,62 +212,102 @@ class Model:
         except:
             raise ValueError('invalid pathname to json file')
 
-        #TODO CONFIG DATA ARGMENT
-
-        if config.has_key('framing'):
-            slicer=config['framing']
-            if slicer.has_key('data_domain'):
-                if issubclass(slicer['data_domain'].__class__,list) :
-                    if issubclass(slicer['data_domain'][0].__class__,list):
-                        self.data_domain=tuple([tuple(a) for a in slicer['data_domain']])
+        #TODO - do assertions for data in the place of pass.
+        if config.has_key('data'):
+            self.data=config['data']
+            if self.data.has_key('data_path'):
+                self.data_path=self.data.pop('data_path')
+            else:
+                raise KeyError('data_path key not found.')
+            if self.data.has_key('num_sampĺes'):
+                pass
+            else:
+                self.data['num_samples']=10
+            if self.data.has_key('number_of_batches'):
+                pass
+            else:
+                self.data['number_of_batches']=4
+            if self.data.has_key('split_tax'):
+                pass
+            else:
+                self.data['split_tax']=0.2
+            if self.data.has_key('name'):
+                #Data-loader types reader
+                name=self.data.pop('name')
+                if name=='Sass' or\
+                    name=='Stattus4AudioSpectrumSampler':
+                    self.data_loader = Sass
+                    if self.data.has_key('freq_size'):
+                        pass
                     else:
-                        raise Exception()
+                        self.data['freq_size']=200
+                    if self.data.has_key('time_size'):
+                        pass
+                    else:
+                        self.data['time_size']=200
+                    if self.data.has_key('same_data_validation'):
+                        pass
+                    else:
+                        self.data['same_data_validation']=True
+        else:
+            raise KeyError('no data field, in json configuration file')
+        if config.has_key('framing'):
+            self.framing=config['framing']
+            if self.framing.has_key('data_domain'):
+                if issubclass(self.framing['data_domain'].__class__,list):
+                    if issubclass(self.framing['data_domain'][0].__class__,list):
+                        self.data_domain=tuple([tuple(a) for a in self.framing.pop('data_domain')])
+                    else:
+                        raise Exception('dimension bounds are not properly setted')
                 else:
-                    raise Exception()
+                    raise Exception('domain must be a list')
             else:
                 raise KeyError('.json does not have data_domain list object')
 
-            if slicer.has_key('number_of_steps'):
-                self.number_of_steps=slicer['number_of_steps']
+            if self.framing.has_key('number_of_steps'):
+                self.number_of_steps=self.framing.pop('number_of_steps')
             else:
                 self.number_of_steps=10
-            if slicer.has_key('frame_selection'):
-                self.frame_selection=slicer['frame_selection']
+            if self.framing.has_key('frame_selection'):
+                self.frame_selection=self.framing.pop('frame_selection')
             else:
                 self.frame_selection='fraction'
-            if slicer.has_key('frame_fraction'):
-                self.frame_fraction=slicer['frame_fraction']
+            if self.framing.has_key('frame_fraction'):
+                self.frame_fraction=self.framing.pop('frame_fraction')
             else:
                 self.frame_fraction=0.15
-            if slicer.has_key('name'):
-                if slicer['name'] == 'EmbeddedSlicer':
-                    if slicer.has_key('fater_slicer'):
-                        self.fater_slicer = slicer['fater_slicer']
+            if self.framing.has_key('name'):
+                name=self.framing.pop('name')
+                if name=='EmbeddedSlicer':
+                    self.slicer=EmbeddedSlicer
+                    if self.framing.has_key('fater_slicer'):
+                        pass
                     else:
-                        self.fater_slicer = LadderSlicer
-                    if slicer.has_key('mater_slicer'):
-                        self.mater_slicer = slicer['mater_slicer']
+                        self.framing['fater_slicer']=LadderSlicer
+                    if self.framing.has_key('mater_slicer'):
+                        pass
                     else:
-                        self.mater_slicer = LadderSlicer
-                    if slicer.has_key('recursive'):
-                        self.recursive = slicer['recursive']
+                        self.framing['mater_slicer']=LadderSlicer
+                    if self.framing.has_key('recursive'):
+                        pass
                     else:
-                        self.recursive = True
-                    if slicer.has_key('recursive_depth'):
-                        self.recursive_depth = slicer['recursive_depth']
+                        self.framing['recursive']=True
+                    if self.framing.has_key('recursive_depth'):
+                        pass
                     else:
-                        self.recursive_depth = 2
-                    if slicer.has_key('recursive_generator'):
-                        self.recursive_generator = slicer['recursive_generator']
+                        self.framing['recursive_depth']=2
+                    if self.framing.has_key('recursive_generator'):
+                        pass
                     else:
-                        self.recursive_generator = "Fater"
-                    self.slicer = EmbeddedSlicer
-                if slicer['name'] == 'LadderSlicer':
-                    self.slicer = LadderSlicer
-                if slicer['name'] == 'NoSliceSlicer':
-                    self.slicer = NoSliceSlicer
+                        self.framing['recursive_generator']="Fater"
+                if name == 'LadderSlicer':
+                    self.slicer=LadderSlicer
+                if name == 'NoSliceSlicer':
+                    self.slicer=NoSliceSlicer
         if config.has_key('arch_search'):
             self.arch_search=config['arch_search']
+            if self.arch_search=='GCNNMaxPooling':
+                self.arch_search=GCNNMaxPooling
         else:
             self.arch_search=GCNNMaxPooling
 
@@ -176,9 +322,18 @@ class Model:
 
     def compile(self):
         '''
-        Put
+         Join the pieces of the Model together:
+
+             1- Signal Input as it multiple Frame Manifolds.
+                -- Slicer Module and Builder with Signal Input Module.
+
+             2- Deep Architecture Pieces for each Manifold and each Frame.
+                -- Hyperparameter Module implementing the NAS Algorithms (Neural Architecture Search).
+
+             3- Dataloader and Checkpointing.
+                -- Checkpointing with Training Evaluation Module.
         '''
-        pass
+
 
 class Builder:
 

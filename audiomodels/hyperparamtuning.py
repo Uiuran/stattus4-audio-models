@@ -115,9 +115,12 @@ class Hyperparameter(object):
                     mater_slicer = LadderSlicer
                     fater_slicer = LadderSlicer
 
-                self.slicer = self.slicer(self.data_domain,number_of_steps,
-                                          mater_slicer,fater_slicer,
-                                          frame_selection=self.frame_selection,frame_fraction=self.frame_fraction,
+                self.slicer = self.slicer(self.data_domain,
+                                          number_of_steps,
+                                          mater_slicer,
+                                          fater_slicer,
+                                          frame_selection=self.frame_selection,
+                                          frame_fraction=self.frame_fraction,
                                           recursive_depth=self.recursive_depth)
             elif isinstance(self.slicer,type) and not self.slicer.__name__ ==\
                 'EmbeddedSlicer':
@@ -127,8 +130,10 @@ class Hyperparameter(object):
                     number_of_steps = hyperparameter['number_of_steps']
                 else:
                     number_of_steps = 10
-                self.slicer = self.slicer(self.data_domain, number_of_steps,
-                                          frame_selection=self.frame_selection,frame_fraction=self.frame_fraction)
+                self.slicer = self.slicer(self.data_domain,
+                                          number_of_steps,
+                                          frame_selection=self.frame_selection,
+                                          frame_fraction=self.frame_fraction)
         else:
             self.slicer = NoSliceSlicer(self.data_domain)
 
@@ -300,16 +305,13 @@ class GCNNMaxPooling(Hyperparameter):
         for no gate, any other value is transformed for 1, in case of being >\
         1, or 0 in case of being < 0.'
 
-        self.gated_positions = gatelist
-        p = np.array(self.gated_positions)
+        self.gated_positions = ExtendList(gatelist)
 
         # test for gated_positions having  numbers others than 1 and 0,
         # turn elements greater than 1 to 1 and less than 0 to 0
-        if ((p < 0).any() or (p>1).any()):
-            p[p>1] = 1
-            p[p<0] = 0
-            self.gated_positions = list(p)
-            del p
+        if ((self.gated_positions < 0).any() or (self.gated_positions > 1).any()):
+            self.gated_positions[self.gated_positions>1] = 1
+            self.gated_positions[self.gated_positions<0] = 0
 
     def _error_fix(self, error, frame, blockindex):
         '''

@@ -63,7 +63,7 @@ def subbed_timeseries(measure,fs):
 
   return a,fsa
 
-def subbed_spect(measure, fs, plot=True, downsample=False):
+def subbed_spect(measure, fs, plot=False, downsample=False):
   '''
    Return Sxx (log squared amplitude of stft spectra), f (frequencies), t (time steps)
   '''

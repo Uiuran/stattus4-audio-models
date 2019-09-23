@@ -126,9 +126,19 @@ class LadderSlicer(DataDomainSlicer):
      step_size and the given number of  steps
     '''
 
-    def  __init__(self, data_domain, number_of_steps, frame_selection='fraction', frame_fraction=0.6):
-        super(LadderSlicer, self).__init__(data_domain, number_of_steps,
-                                           frame_selection, frame_fraction)
+    def  __init__(
+        self,
+        data_domain,
+        number_of_steps,
+        frame_selection,
+        frame_fraction
+    ):
+        super(LadderSlicer, self).__init__(
+            data_domain,
+            number_of_steps,
+            frame_selection,
+            frame_fraction
+        )
         self.configure(data_domain)
 
     def configure(self, data_domain):
@@ -184,11 +194,20 @@ class EmbeddedSlicer(DataDomainSlicer):
         recursive_generator choosen. Defaults to 2.
 
     '''
-    def __init__(self, data_domain, number_of_steps,
-                 mater_slicer, fater_slicer,
-                 frame_selection='fraction', frame_fraction=0.6,
-                 recursive=True, recursive_generator='Fater', recursive_depth=2):
-        super(EmbeddedSlicer, self).__init__(data_domain, number_of_steps,
+    def __init__(
+        self,
+        data_domain,
+        number_of_steps,
+        frame_selection,
+        frame_fraction,
+        mater_slicer=LadderSlicer,
+        fater_slicer=LadderSlicer,
+        recursive=True,
+        recursive_generator='Fater',
+        recursive_depth=2
+    ):
+        super(EmbeddedSlicer, self).__init__(data_domain,
+                                             number_of_steps,
                                              frame_selection=frame_selection,
                                              frame_fraction=frame_fraction)
         #check slicer objects

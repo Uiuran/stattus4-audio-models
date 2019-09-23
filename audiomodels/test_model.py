@@ -8,10 +8,12 @@ model = Model(
             verbose=True)
 
 def test_configure():
+    print(model.data_loader.training())
     model.info()
 
 def test_compile():
-    model.print_names()
+    model.compile()
+    model.print_namescopes()
 
 def test_one_batch():
     model.feed_batch(source='model')
@@ -24,3 +26,5 @@ def test_batch_pool():
     model.run()
     model.run_all(ckpt='~/stattus4/model_test_ckpt/', strategy='accuracy')
     model.test()
+
+test_configure()
