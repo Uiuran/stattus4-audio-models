@@ -1,10 +1,17 @@
-from template import NotDomainSlicerError, WrongSlicerError
+from errors import NotDomainSlicerError, WrongSlicerError
+from util import *
 import warnings
-import numpy  as np
 
 class DataDomainSlicer(object):
 
-    def __init__(self, data_domain, number_of_steps, frame_selection, frame_fraction):
+    def __init__(
+        self,
+        data_domain,
+        number_of_steps,
+        frame_selection,
+        frame_fraction,
+        mode='generator'
+    ):
         '''
          Abstract Class.
          Get domain bounds and set the domain slicing method.
@@ -12,6 +19,7 @@ class DataDomainSlicer(object):
         self.frame_selection = frame_selection
         self.frame_fraction = frame_fraction
         self.number_of_steps = number_of_steps
+        self.mode=mode
 
     def assert_domain(self, data_domain):
         '''
@@ -76,11 +84,19 @@ class DataDomainSlicer(object):
         abstract method to be implemented
         '''
         if self._n < self.number_of_steps:
-            slic = self.slices[self._n]
+            slic=self.slices[self._n]
             self._n += 1
-            return tuple(slic)
-        else:
-            raise StopIteration()
+            return tuple([tuple(el) for el in slic])
+        elif self.mode=='generator':
+            raise StopIteration('end of frame slices')
+        elif self.mode=='iterator':
+            # substitute StopIteration exception with a warning and resetting
+            # counter _n
+            warnings.warn('Returning to the first element of the iterator')
+            self._n=0
+            slic=self.slices[self._n]
+            self._n += 1
+            return tuple([tuple(el) for el in slic])
 
     def next(self):
         return self.get_slice()
@@ -107,9 +123,9 @@ class DataDomainSlicer(object):
             select = []
             for i in range(number_of_frames):
                 select.append(self.slices[ordered_sizes_index[len(slice_sizes)-i-1]])
-
-            self.slices = select
-
+            del self.slices
+            self.slices=select
+            self.number_of_steps=len(self.slices)
 
         if self.frame_selection == 'random':
             number_of_frames = int(self.frame_fraction*len(self.slices))
@@ -117,7 +133,9 @@ class DataDomainSlicer(object):
             for i in range(number_of_frames):
                 select.append( self.slices.pop( np.random.randint(
                         len(self.slices) ) ) )
-            self.slices = select
+            del self.slices
+            self.slices=select
+            self.number_of_steps=len(self.slices)
 
 class LadderSlicer(DataDomainSlicer):
     '''
@@ -193,6 +211,11 @@ class EmbeddedSlicer(DataDomainSlicer):
         Fater Slice, the intervals will be generated acording to
         recursive_generator choosen. Defaults to 2.
 
+     Returns number of slices that is fraction*number_of_steps specified in the
+     argment.
+     If number_of_steps is negative them it uses all the frames automatically
+     produced by the slicer and returns fraction*len(self.slices) frames.
+
     '''
     def __init__(
         self,
@@ -204,19 +227,19 @@ class EmbeddedSlicer(DataDomainSlicer):
         fater_slicer=LadderSlicer,
         recursive=True,
         recursive_generator='Fater',
-        recursive_depth=2
+        recursive_depth=2,
+        mode='generator'
     ):
         super(EmbeddedSlicer, self).__init__(data_domain,
                                              number_of_steps,
-                                             frame_selection=frame_selection,
-                                             frame_fraction=frame_fraction)
+                                             frame_selection,
+                                             frame_fraction,
+                                             mode=mode)
         #check slicer objects
-        if (fater_slicer.__name__ == 'EmbeddedSlicer'):
-            raise WrongSlicerError(fater_slicer, ', use a non EmbeddedSlicer\
-                                   as Fater Slicer')
-        if (mater_slicer.__name__ == 'EmbeddedSlicer'):
-            raise WrongSlicerError(mater_slicer, ', use a non EmbeddedSlicer\
-                                   as Mater Slicer')
+        if (fater_slicer.__name__=='EmbeddedSlicer'):
+            raise WrongSlicerError(fater_slicer, ', use a non EmbeddedSlicer as Fater Slicer')
+        if (mater_slicer.__name__=='EmbeddedSlicer'):
+            raise WrongSlicerError(mater_slicer, ', use a non EmbeddedSlicer as Mater Slicer')
 
         if issubclass(fater_slicer,DataDomainSlicer) and\
             issubclass(mater_slicer,DataDomainSlicer):
@@ -225,9 +248,9 @@ class EmbeddedSlicer(DataDomainSlicer):
             self.fater = fater_slicer(data_domain, number_of_steps,
                                       frame_selection, frame_fraction)
             if recursive:
-                self.generator = recursive_generator
-                self.depth = recursive_depth
-                self.recursive = recursive
+                self.generator=recursive_generator
+                self.depth=recursive_depth
+                self.recursive=recursive
         else:
             if not issubclass(fater_slicer,DataDomainSlicer):
                 message = fater_slicer.__name__
@@ -266,7 +289,10 @@ class EmbeddedSlicer(DataDomainSlicer):
 
         self.slices = np.unique(self.slices,axis=0)
         self.slices = self.slices.tolist()
-        self.number_of_steps = len(self.slices)
+        if self.number_of_steps<0:
+            self.number_of_steps=len(self.slices)
+        else:
+            self.slices=self.slices[0:self.number_of_steps]
 
 class NoSliceSlicer(DataDomainSlicer):
 

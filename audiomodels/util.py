@@ -12,21 +12,64 @@ from numpy import asarray, array, ravel, repeat, prod, mean, where, ones
 #any all, function has it is in python 3, for any iterable, not only numpy arrays
 from IPython.display import Math
 
-def any(iterable):
-    if hasattr(iterable,'__iter__'):
-        for element in iterable:
-            if element:
-                return True
-        return False
-    else:
-        return None
 
-def all(iterable):
-    if hasattr(iterable,'__iter__'):
-        for element in iterable:
-            if not element:
+class Util:
+
+    @staticmethod
+    def set_with_assert(instance, holder, argment, classtype):
+        '''
+         Helper function to assert argments
+        '''
+        if issubclass(argment.__class__, classtype):
+            # instance assertion
+            instance.__dict__[holder]=argment
+        elif issubclass(argment.__class__,type):
+                    # class assertion
+            if issubclass(argment, classtype):
+                instance.__dict__[holder]=argment
+        else:
+            raise ValueError(str(argment.__class__.__name__)+" must be a "+classtype.__name__+" instance to be configured")
+        return instance
+
+    @staticmethod
+    def assert_instance(argment, classtype):
+        if issubclass(argment.__class__, classtype):
+            # instance assertion
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def assert_class(argment, classtype):
+
+        if issubclass(argment.__class__,type):
+                    # class assertion
+            if issubclass(argment, classtype):
+                return True
+            else:
                 return False
-        return True
+        else:
+            return False
+
+
+    @staticmethod
+    def any(iterable):
+        if hasattr(iterable,'__iter__'):
+            for element in iterable:
+                if element:
+                    return True
+            return False
+        else:
+            return None
+
+    @staticmethod
+    def all(iterable):
+        if hasattr(iterable,'__iter__'):
+            for element in iterable:
+                if not element:
+                    return False
+            return True
+
 
 class AttrDict(dict):
 
@@ -122,8 +165,3 @@ class ExtendList(list):
                 l.append(a)
 
         return tuple(l)
-
-
-
-
-

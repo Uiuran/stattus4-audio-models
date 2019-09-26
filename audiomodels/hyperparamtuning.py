@@ -1,14 +1,9 @@
-from  model import *
+from domain import *
 from util import *
+from tfhelper import *
 import warnings
 import copy
-#GRAPH BUILDER AND RUNNER CLASS
 
-
-# TODO- fazer META tags: config frames, blocos configs e gates configs para
-# casos de implementacao do Hyperparameter tuning
-
-# Hyperparam choosing class
 class Hyperparameter(object):
     '''
      Template class for hyperparam selection.
@@ -94,6 +89,11 @@ class Hyperparameter(object):
             # frames applies here
             self.frame_fraction = 0.15
 
+        if hyperparameter.has_key('mode'):
+            self.mode=hyperparameter['mode']
+        else:
+            self.mode='generator'
+
         if hyperparameter.has_key('slicer'):
             self.slicer = hyperparameter['slicer']
             # Try to find slicer args
@@ -115,13 +115,15 @@ class Hyperparameter(object):
                     mater_slicer = LadderSlicer
                     fater_slicer = LadderSlicer
 
+
                 self.slicer = self.slicer(self.data_domain,
                                           number_of_steps,
-                                          mater_slicer,
-                                          fater_slicer,
                                           frame_selection=self.frame_selection,
                                           frame_fraction=self.frame_fraction,
-                                          recursive_depth=self.recursive_depth)
+                                          mater_slicer=mater_slicer,
+                                          fater_slicer=fater_slicer,
+                                          recursive_depth=self.recursive_depth,
+                                          mode=self.mode)
             elif isinstance(self.slicer,type) and not self.slicer.__name__ ==\
                 'EmbeddedSlicer':
                 if hyperparameter.has_key('number_of_steps'):
@@ -133,11 +135,12 @@ class Hyperparameter(object):
                 self.slicer = self.slicer(self.data_domain,
                                           number_of_steps,
                                           frame_selection=self.frame_selection,
-                                          frame_fraction=self.frame_fraction)
+                                          frame_fraction=self.frame_fraction,
+                                          mode=self.mode)
         else:
-            self.slicer = NoSliceSlicer(self.data_domain)
+            self.slicer = NoSliceSlicer(self.data_domain,mode=self.mode)
 
-    def eval_metrics(self, frame, config, mode): 
+    def eval_metrics(self, frame, config, mode):
         '''
           Evaluate metrics for a given configuration of architecture, for given
          frame.
@@ -387,7 +390,7 @@ class GCNNMaxPooling(Hyperparameter):
 
     def _search_append_block(self, frame):
 
-        self.degrad = [0.0]*self.slicer.dim
+        self.degrad=[0.0]*self.slicer.dim
         self.deep_arch[frame].append([])
         self.deep_arch[frame][-1].append((2,2))
 
