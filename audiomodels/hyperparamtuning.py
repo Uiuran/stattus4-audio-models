@@ -67,14 +67,14 @@ class Hyperparameter(object):
 
     def _configure_slicer(self, hyperparameter):
 
-        if hyperparameter.has_key('recursive_depth'):
+        if 'recursive_depth' in hyperparameter:
             self.recursive_depth = hyperparameter['recursive_depth']
         else:
             # Default is 2, passed in the class implementation, however you may
             # implement it here
             self.recursive_depth = 2
 
-        if hyperparameter.has_key('frame_selection'):
+        if 'frame_selection' in hyperparameter:
             self.frame_selection = hyperparameter['frame_selection']
         else:
             # The default value for frame_selection is implemented in Slicer
@@ -82,31 +82,30 @@ class Hyperparameter(object):
             # hyperparametrization
             self.frame_selection = 'fraction'
 
-        if hyperparameter.has_key('frame_fraction'):
+        if 'frame_fraction' in hyperparameter:
             self.frame_fraction = hyperparameter['frame_fraction']
         else:
             # Same consideration as above, about default value for fraction of
             # frames applies here
             self.frame_fraction = 0.15
 
-        if hyperparameter.has_key('mode'):
+        if 'mode' in hyperparameter:
             self.mode=hyperparameter['mode']
         else:
             self.mode='generator'
 
-        if hyperparameter.has_key('slicer'):
+        if 'slicer' in hyperparameter:
             self.slicer = hyperparameter['slicer']
             # Try to find slicer args
-
             if isinstance(self.slicer,type) and self.slicer.__name__ ==\
                 'EmbeddedSlicer':
-                if hyperparameter.has_key('number_of_steps'):
+                if 'number_of_steps' in hyperparameter:
                     assert isinstance(hyperparameter['number_of_steps'],int),'number of steps must be integer'
                     number_of_steps = hyperparameter['number_of_steps']
                 else:
                     number_of_steps = 10
 
-                if hyperparameter.has_key('fater_slicer') and hyperparameter.has_key('mater_slicer'):
+                if 'fater_slicer' in hyperparameter and 'mater_slicer' in hyperparameter:
                     assert isinstance(hyperparameter['fater_slicer'],type) and\
                         isinstance(hyperparameter['mater_slicer'],type),'fater and mater slicers must be an instance of type'
                     mater_slicer = hyperparameter['mater_slicer']
@@ -126,7 +125,7 @@ class Hyperparameter(object):
                                           mode=self.mode)
             elif isinstance(self.slicer,type) and not self.slicer.__name__ ==\
                 'EmbeddedSlicer':
-                if hyperparameter.has_key('number_of_steps'):
+                if 'number_of_steps' in hyperparameter:
                     assert isinstance(hyperparameter['number_of_steps'],int),'number\
                         o f steps must be integer'
                     number_of_steps = hyperparameter['number_of_steps']
@@ -162,7 +161,7 @@ class Hyperparameter(object):
         self.assert_frame()
         # HASHABLE TYPE to KEY DICT OF BLOCKS
         frame = tuple( [tuple(el) for el in frame] )
-        if self.deep_arch.has_key(frame):
+        if frame in self.deep_arch:
 
             # Adaptative blocks, first try on piramidal logic, further studies
             # on Architecture search
@@ -213,7 +212,7 @@ class GCNNMaxPooling(Hyperparameter):
      Pooling 2D.
     '''
     def __init__(self, domain_compact, **kwargs):
-        super( GCNNMaxPooling, self).__init__(domain_compact, **kwargs)
+        Hyperparameter.__init__(self, domain_compact, **kwargs)
         self.deep_arch['arch_type'] = 'GCNNMaxPooling'
         self.deep_arch['deep_type'] = ['convolution','gate']
         self.configure()
@@ -295,7 +294,7 @@ class GCNNMaxPooling(Hyperparameter):
 
         ### Max Pooling Cut-off
 
-        if self.hyperparameters.has_key('pooling_cutoff'):
+        if 'pooling_cutoff' in self.hyperparameters:
             self.pooling_cutoff = self.hyperparameters['pooling_cutoff']
         else:
             self.pooling_cutoff = 25
@@ -465,4 +464,4 @@ class GCNNMaxPooling(Hyperparameter):
          architecture in which you will do hyperparametrization searching.
         '''
         self.assert_frame()
-        super( GCNNMaxPooling, self).update_architecture(frame=frame,algorithm=algorithm)
+        Hyperparameter.update_architecture(self, frame=frame,algorithm=algorithm)
