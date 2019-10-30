@@ -20,10 +20,9 @@ This Neural Network is being implemented altogether with Neural Network API, Ker
     * Corrected Bugs from previous commit, pyramidal Hyperparameter automatic has a beta (17/09/2019) **Done**
     * Builder for final model. **Doing**
     
-  * What is Next ?
-    * Cross-Validation with Spectrogram Data, ~ 400x600, of the order of ~ 100000 units.
-    * Calculus of accuracy and fn parameters.
-    
+  * 30/10/2019
+    * Builder from layers that builds deep parts of the network and receive from Signal layer. **Doing**
+
   * Future 
     * Implementation of Bi-LSTM(RNN) module.
     * Implementation of another Neural Architecture Search Algorithms.
@@ -36,12 +35,14 @@ This Neural Network is being implemented altogether with Neural Network API, Ker
 
 ## Installation
 
-Nowadays requires python 2.7
+Accepts Python 3.6.9
+
+See the requiriment file to do pip install, we advise to install the dependencies from conda channel before running pip install.
 
 ```bash
 git clone https://github.com/Uiuran/stattus4-audio-models.git
 cd ~/path/to/dir/stattus4-audio-models/
-conda create --name audio python=2.7
+conda create --name audio python=3.6
 conda activate audio
 pip install .
 ``` 
@@ -50,12 +51,11 @@ Bitbucket repository to be synchronized ...
 
 ## Usage 
 ```python
-import audiomodels.model as audio
+import audiomodels.model as audioo
 ``` 
 
 ## Must TODO
 
-* Port to python 3
 * Refatorate changing names.
 
 ## Possible TODOs 

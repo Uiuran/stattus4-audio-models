@@ -155,11 +155,11 @@ class Builder(object):
 
     def _placeholder(self, **kwargs):
 
-        if kwargs.has_key('name'):
+        if "name" in kwargs:
             name=kwargs['name']
         else:
             name='signal'
-        if kwargs.has_key('slice'):
+        if "slice" in kwargs:
             slice=kwargs['slice']
         else:
             raise ValueError('input slice not found.')

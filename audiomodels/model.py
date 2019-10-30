@@ -179,47 +179,47 @@ class Model:
             raise ValueError('invalid pathname to json file')
 
         #TODO - do assertions for data in the place of pass.
-        if config.has_key('data'):
+        if "data" in config:
             self.data=config['data']
-            if self.data.has_key('data_path'):
+            if "data_path" in self.data:
                 self.data_path=self.data.pop('data_path')
             else:
                 raise KeyError('data_path key not found.')
-            if self.data.has_key('num_sampĺes'):
+            if "num_samples" in self.data:
                 pass
             else:
                 self.data['num_samples']=10
-            if self.data.has_key('number_of_batches'):
+            if "number_of_batches" in self.data:
                 pass
             else:
                 self.data['number_of_batches']=4
-            if self.data.has_key('split_tax'):
+            if "split_tax" in self.data:
                 pass
             else:
                 self.data['split_tax']=0.2
-            if self.data.has_key('name'):
+            if "name" in self.data:
                 #Data-loader types reader
                 name=self.data.pop('name')
                 if name=='Sass' or\
                     name=='Stattus4AudioSpectrumSampler':
                     self.data_loader = Sass
-                    if self.data.has_key('freq_size'):
+                    if "freq_size" in self.data:
                         pass
                     else:
                         self.data['freq_size']=200
-                    if self.data.has_key('time_size'):
+                    if "time_size" in self.data:
                         pass
                     else:
                         self.data['time_size']=200
-                    if self.data.has_key('same_data_validation'):
+                    if "same_data_validation" in self.data:
                         pass
                     else:
                         self.data['same_data_validation']=True
         else:
             raise KeyError('no data field, in json configuration file')
-        if config.has_key('framing'):
+        if "framing" in config:
             self.framing=config['framing']
-            if self.framing.has_key('data_domain'):
+            if "data_domain" in self.framing:
                 if issubclass(self.framing['data_domain'].__class__,list):
                     if issubclass(self.framing['data_domain'][0].__class__,list):
                         self.data_domain=tuple([tuple(a) for a in self.framing.pop('data_domain')])
@@ -230,23 +230,23 @@ class Model:
             else:
                 raise KeyError('.json does not have data_domain list object')
 
-            if self.framing.has_key('number_of_steps'):
+            if "number_of_steps" in self.framing:
                 pass
             else:
                 self.framing['number_of_steps']=10
-            if self.framing.has_key('frame_selection'):
+            if "frame_selection" in self.framing:
                 pass
             else:
                 self.frame_selection['frame_selection']='fraction'
-            if self.framing.has_key('frame_fraction'):
+            if "frame_fraction" in self.framing:
                 pass
             else:
                 self.framing['frame_fraction']=0.15
-            if self.framing.has_key('name'):
+            if "name" in self.framing:
                 name=self.framing.pop('name')
                 if name=='EmbeddedSlicer':
                     self.framing['slicer']=EmbeddedSlicer
-                    if self.framing.has_key('fater_slicer'):
+                    if "frater_slicer" in self.framing:
                         if self.framing['fater_slicer']=='LadderSlicer':
                             self.framing['fater_slicer']=LadderSlicer
                         elif self.framing['fater_slicer']=='NoSliceSlicer':
@@ -255,7 +255,7 @@ class Model:
                             raise ValueError('Given Unknown Fater Slicer')
                     else:
                         self.framing['fater_slicer']=LadderSlicer
-                    if self.framing.has_key('mater_slicer'):
+                    if "mater_slicer" in self.framing:
                         if self.framing['mater_slicer']=='LadderSlicer':
                             self.framing['mater_slicer']=LadderSlicer
                         elif self.framing['mater_slicer']=='NoSliceSlicer':
@@ -264,15 +264,15 @@ class Model:
                             raise ValueError('Given Unknown Mater Slicer')
                     else:
                         self.framing['mater_slicer']=LadderSlicer
-                    if self.framing.has_key('recursive'):
+                    if "recursive" in self.framing:
                         pass
                     else:
                         self.framing['recursive']=True
-                    if self.framing.has_key('recursive_depth'):
+                    if "recursive_depth" in self.framing:
                         pass
                     else:
                         self.framing['recursive_depth']=2
-                    if self.framing.has_key('recursive_generator'):
+                    if "recursive_generator" in self.framing:
                         pass
                     else:
                         self.framing['recursive_generator']="Fater"
@@ -280,7 +280,7 @@ class Model:
                     self.framing['slicer']=LadderSlicer
                 if name == 'NoSliceSlicer':
                     self.framing['slicer']=NoSliceSlicer
-        if config.has_key('arch_search'):
+        if "arch_search" in config:
             self.arch_search=config['arch_search']
             if self.arch_search=='GCNNMaxPooling':
                 self.arch_search=GCNNMaxPooling

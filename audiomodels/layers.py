@@ -11,14 +11,14 @@ class Signal(Builder):
                  channels=1,
                  name='signal_in'
     ):
-        Signal.__init__(self, number_of_inputs=number_of_inputs,
+        Builder.__init__(self, number_of_inputs=number_of_inputs,
                                       dtype=dtype , channels=channels,
                                       atype='placeholder')
         self.name=name
         self.namescopes.signal={}
 
     def __call__(self, input, tuning=None, **kwargs):
-        Signal.__call__(self, input, **kwargs)
+        Builder.__call__(self, input, **kwargs)
 
         if self.input is not 'dataset':
             raise ValueError('input for Signal layer must be a dataset.')
@@ -32,7 +32,7 @@ class Signal(Builder):
 
         while self.input_feeded<self.number_of_inputs:
             slice=tuning.slicer.get_slice()
-            Signal.build_graph_module(self, 'placeholder', slice=slice, name=self.name)
+            Builder.build_graph_module(self, 'placeholder', slice=slice, name=self.name)
             self.input_feeded += 1
         return self
 

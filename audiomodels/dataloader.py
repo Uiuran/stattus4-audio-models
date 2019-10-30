@@ -235,11 +235,12 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
         b = 0
         m = 0
         i=0
-
+        lname=len(self._nomes)
         while c+b<self.num_samples:
 
             if (self._nomes[i].find('sv') != -1 or self._nomes[i].find('SV') != -1) and c < self.num_samples:
 
+                
                 label = self._nomes[i][0:2]
                 unique_id = self._nomes[i][2:-4]
 
@@ -309,7 +310,7 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
                     else:
                         i += 1
 
-            if len(self._nomes)<i:
+            if lname-1<i:
                 raise NotEnoughDataError('Not enough data from the given sizes',b,c,self.sampled_batches)
 
 Sass = Stattus4AudioSpectrumSampler

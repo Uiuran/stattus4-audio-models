@@ -69,9 +69,10 @@ def subbed_spect(measure, fs, plot=False, downsample=False):
   '''
   if downsample:
       sampa = np.min(np.array(amostragem(np.array(measure),fs, plot=plot))[:,1])
-      fs = (fs/int(sampa))
+      fs = int(fs/int(sampa))
       measure = downsampling(np.array(measure), fs)
-  f,t,Sxx = signal.spectrogram(measure, fs, nfft=fs/4, nperseg=fs/5, noverlap=fs/10, scaling='spectrum', mode='magnitude')
+  
+  f,t,Sxx = signal.spectrogram(measure, fs, nfft=fs//4, nperseg=fs//5, noverlap=fs//10, scaling='spectrum', mode='magnitude')
   #Cut zero variance part of spectra(useless recording) 
   #Sxx = Sxx[:,np.var(np.log(Sxx+1e-13),axis=0) > 0.5]
   #l = len(Sxx[0,:])
