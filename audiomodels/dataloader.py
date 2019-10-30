@@ -36,7 +36,7 @@ class Stattus4AudioSpectrumSampler(BaseDataSampler):
          Given data_dir (directory of data) it injects an amount of data of number_of_batches with 2*num_samples for each batch into memory (num_samples for each labeled data).
          Data points are a tuple with unique_id in position 0, label in position 1 and spectrogram in position 2. The unique_id and the label are extracted from audio filename loaded.
         '''
-        super(Stattus4AudioSpectrumSampler,self).__init__(data_dir,**kwargs)
+        BaseDataSampler.__init__(self, data_dir,**kwargs)
         self.split_tax = split_tax
         self.nbatches = number_of_batches
         self.sampled_batches = [0,0]

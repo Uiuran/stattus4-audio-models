@@ -98,7 +98,7 @@ class DataDomainSlicer(object):
             self._n += 1
             return tuple([tuple(el) for el in slic])
 
-    def next(self):
+    def __next__(self):
         return self.get_slice()
 
     def __iter__(self):
@@ -151,7 +151,7 @@ class LadderSlicer(DataDomainSlicer):
         frame_selection,
         frame_fraction
     ):
-        super(LadderSlicer, self).__init__(
+        super().__init__(
             data_domain,
             number_of_steps,
             frame_selection,
@@ -165,7 +165,7 @@ class LadderSlicer(DataDomainSlicer):
         infimum. In practice it returns a list of tuples, to attribute slices, each with the lower
         and the upper bound of the slice.
         '''
-        super( LadderSlicer, self).configure(data_domain)
+        super().configure(data_domain)
         self.step_size = []
 
         for i in range(self.dim):
@@ -230,11 +230,11 @@ class EmbeddedSlicer(DataDomainSlicer):
         recursive_depth=2,
         mode='generator'
     ):
-        super(EmbeddedSlicer, self).__init__(data_domain,
-                                             number_of_steps,
-                                             frame_selection,
-                                             frame_fraction,
-                                             mode=mode)
+        super().__init__(data_domain,
+                         number_of_steps,
+                         frame_selection,
+                         frame_fraction,
+                         mode=mode)
         #check slicer objects
         if (fater_slicer.__name__=='EmbeddedSlicer'):
             raise WrongSlicerError(fater_slicer, ', use a non EmbeddedSlicer as Fater Slicer')
@@ -261,7 +261,7 @@ class EmbeddedSlicer(DataDomainSlicer):
         self.configure(data_domain)
 
     def configure(self, data_domain):
-        super( EmbeddedSlicer, self).configure(data_domain)
+        super().configure(data_domain)
 
         if not self.mater._n == 0:
             self.mater.configure(data_domain)
@@ -299,11 +299,12 @@ class NoSliceSlicer(DataDomainSlicer):
     def __init__(self, data_domain,
                  number_of_steps=1,frame_selection='fraction',
                  frame_fraction=1.0):
-        super(NoSliceSlicer, self).__init__(data_domain,
-                                            number_of_steps,frame_selection,
-                                            frame_fraction)
+        super().__init__(data_domain,
+                         number_of_steps,
+                         frame_selection,
+                         frame_fraction)
         self.configure(data_domain)
 
     def configure(self,data_domain):
-        super(NoSliceSlicer, self).configure(data_domain)
+        super().configure(data_domain)
         self.slices = [data_domain]
