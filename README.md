@@ -33,12 +33,13 @@ This Neural Network is being implemented altogether with Neural Network API, Ker
     * Corrected Bugs from previous commit, pyramidal Hyperparameter automatic has a beta (17/09/2019) **Done**
     * Builder for final model. **Doing**
     
-  * 30/10/2019
-    * Builder from layers that builds deep parts of the network and receive from Signal layer. **Doing**
+  * 08/12/2019
+    * Builder for stacked layers (i.e. deepness for same design arch).
 
   * Future 
-    * Implementation of Bi-LSTM(RNN) module.
-    * Implementation of another Neural Architecture Search Algorithms.
+    
+    * Implementation of Bi-LSTM(RNN) module, GAN modules such Sequentially Framed GANs. Other architecture modules
+    * Implementation of another Neural Architecture Search Algorithms such Monte Carlo Search Trees and GAs Metaheuristic class of algorithms.
     
   * Previous Milestones
   
@@ -60,22 +61,21 @@ conda activate audio
 pip install .
 ``` 
 
-Bitbucket repository to be synchronized ...
-
 ## Usage 
 ```python
-import audiomodels.model as audioo
+import audiomodels.model as audio
 ``` 
 
-## Must TODO
+## TODO
 
-* Refatorate changing names.
+* Port future Beta version to TF 2.0. 
 
-## Possible TODOs 
+## Acknowledged backlogs (or archived, for the moment priority, TODOs)
 
 These were developments predicted but dumped for Neural Network development.
 
-* Statistical Analysis
+* Enrich Statistical Analysis.
 * Filtering
   * Spectral
   * Inverse Filtering
+* Big-Data and cluster processing of models (such using Spark and serving TF services).
