@@ -3,7 +3,13 @@ Audio Models and statistical tools used in Devs for Stattus4 Start-Up of Water W
 
 # Data
 
-#TODO
+## Children
+
+The children data, up-to-now (04-12-2019), comprises of the LANNA (AI Labs from pals in Northeast Europe) data for children with specific speech impairement and my own recordings from children in circus stages having fun. I plan to do all the type of bit science and reverberation with it, for further explanations contact me.
+
+## Birds
+
+Birds down inside the flowers is a beautiful scenery. #TODO
 
 # Data Historical Disclamer
 
