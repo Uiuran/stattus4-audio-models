@@ -1,6 +1,6 @@
-from domain import *
-from util import *
-from tfhelper import *
+from .domain import *
+from .util import *
+from .tfhelper import *
 import warnings
 import copy
 

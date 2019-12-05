@@ -1,4 +1,4 @@
-from dataloader import *
+from .dataloader import *
 import librosa as audio
 
 path = '/home/penalva/stattus4-audio-models/data/'

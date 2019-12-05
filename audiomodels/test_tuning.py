@@ -1,4 +1,4 @@
-from hyperparamtuning import *
+from .hyperparamtuning import *
 
 def test_embeddedslicer():
     hptuning = GCNNMaxPooling(((0,400),(0,600)), slicer= EmbeddedSlicer,

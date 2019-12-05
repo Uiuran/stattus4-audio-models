@@ -1,9 +1,9 @@
 #encode : utf-8
 
-from errors import NotEnoughDataError, BatchLimitException
-from template import BaseDataSampler
-from spect import *
-from util import *
+from .errors import NotEnoughDataError, BatchLimitException
+from .template import BaseDataSampler
+from .spect import *
+from .util import *
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import librosa
 from random import shuffle

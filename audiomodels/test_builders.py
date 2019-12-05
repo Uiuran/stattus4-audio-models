@@ -1,7 +1,7 @@
-from hyperparamtuning import GCNNMaxPooling
-from dataloader import Sass
-from domain import *
-from layers import Signal
+from .hyperparamtuning import GCNNMaxPooling
+from .dataloader import Sass
+from .domain import *
+from .layers import Signal
 
 path='/home/penalva/stattus4-audio-models/data/'
 def test_signal():

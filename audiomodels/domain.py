@@ -1,5 +1,5 @@
-from errors import NotDomainSlicerError, WrongSlicerError
-from util import *
+from .errors import NotDomainSlicerError, WrongSlicerError
+from .util import *
 import warnings
 
 class DataDomainSlicer(object):

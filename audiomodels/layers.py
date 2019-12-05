@@ -1,5 +1,5 @@
-from builder import Builder
-from util import *
+from .builder import Builder
+from .util import *
 import warnings
 
 class Signal(Builder):

@@ -5,9 +5,9 @@ from tensorflow.python import debug as tf_debug
 from tensorflow.python import util
 from tensorflow.python.framework import ops as tf_ops
 from tensorflow.python.client import timeline
-from util import *
-from template import BaseDataSampler
-from errors import UnknownArchBlockException, UnknownInputError
+from .util import *
+from .template import BaseDataSampler
+from .errors import UnknownArchBlockException, UnknownInputError
 
 class Builder(object):
 

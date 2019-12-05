@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from spect import *
-from cgraphviz import *
-from tfhelper import *
-from dataloader import *
-from ckpt_hookers import *
-from domain import *
-from hyperparamtuning import  *
-from util import *
-from builder import *
+from .spect import *
+from .cgraphviz import *
+from .tfhelper import *
+from .dataloader import *
+from .ckpt_hookers import *
+from .domain import *
+from .hyperparamtuning import  *
+from .util import *
+from .builder import *
 
 # SHORT NAMES
 tf.summary.initialize = tf.contrib.summary.initialize
