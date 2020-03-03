@@ -13,7 +13,7 @@ Birds down inside the flowers is a beautiful scenery. #TODO
 
 # Data Historical Disclamer
 
-This API is suited for any audio modelling. It was produced under the hood of Stattus4 and FAPESP enterprise for water tubulation sounds, but now i, the author, will be using for further serious research on human speech system. Since I am the author, i dont have any debt with FAPESP and Stattus4 who agreed with License term, they can commercialize FROM previous commit versions (04/12/2019).
+This API is suited for any audio modelling. It was produced under the hood of Stattus4 and FAPESP enterprise for water tubulation sounds, and will be turned into Beta version as soon as possible for the author and possible contribuitors. 
 
 Note: this is a Alpha Version.
 
